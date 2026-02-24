@@ -10,3 +10,5 @@ export '/interactive_hub/interactive_hub_widget.dart' show InteractiveHubWidget;
 export '/youth_sign_up/youth_sign_up_widget.dart' show YouthSignUpWidget;
 export '/shop_individual_product/shop_individual_product_widget.dart'
     show ShopIndividualProductWidget;
+export '/youth_main_screen/youth_main_screen_widget.dart'
+    show YouthMainScreenWidget;

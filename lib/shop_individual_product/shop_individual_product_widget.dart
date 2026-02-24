@@ -45,13 +45,17 @@ class _ShopIndividualProductWidgetState
     _model = createModel(context, () => ShopIndividualProductModel());
 
     _model.productDescriptionExpandableController =
-        ExpandableController(initialExpanded: false);
+        ExpandableController(initialExpanded: false)
+          ..addListener(() => safeSetState(() {}));
     _model.shippingExpandableController =
-        ExpandableController(initialExpanded: false);
+        ExpandableController(initialExpanded: false)
+          ..addListener(() => safeSetState(() {}));
     _model.returnsPolicyExpandableController =
-        ExpandableController(initialExpanded: false);
+        ExpandableController(initialExpanded: false)
+          ..addListener(() => safeSetState(() {}));
     _model.reviewsExpandableController =
-        ExpandableController(initialExpanded: false);
+        ExpandableController(initialExpanded: false)
+          ..addListener(() => safeSetState(() {}));
     _model.reviewCommentTextController ??= TextEditingController();
     _model.reviewCommentFocusNode ??= FocusNode();
 

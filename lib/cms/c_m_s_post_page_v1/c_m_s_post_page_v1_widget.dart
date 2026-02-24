@@ -108,6 +108,35 @@ class _CMSPostPageV1WidgetState extends State<CMSPostPageV1Widget> {
                               (MediaQuery.sizeOf(context).width / 16) * 9,
                               200.0,
                             ),
+                            child: custom_widgets.UniversalVideoEmbedWidget(
+                              width: MediaQuery.sizeOf(context).width * 1.0,
+                              height: valueOrDefault<double>(
+                                (MediaQuery.sizeOf(context).width / 16) * 9,
+                                200.0,
+                              ),
+                              url: CMSPostStruct.maybeFromMap(
+                                      containerGetCMSPostByIDResponse.jsonBody)!
+                                  .videoUrl,
+                            ),
+                          ),
+                        if ((CMSPostStruct.maybeFromMap(
+                                        containerGetCMSPostByIDResponse
+                                            .jsonBody)
+                                    ?.type ==
+                                'VIDEO') &&
+                            responsiveVisibility(
+                              context: context,
+                              phone: false,
+                              tablet: false,
+                              tabletLandscape: false,
+                              desktop: false,
+                            ))
+                          Container(
+                            width: MediaQuery.sizeOf(context).width * 1.0,
+                            height: valueOrDefault<double>(
+                              (MediaQuery.sizeOf(context).width / 16) * 9,
+                              200.0,
+                            ),
                             child: custom_widgets.YouTubeEmbedWidget(
                               width: MediaQuery.sizeOf(context).width * 1.0,
                               height: valueOrDefault<double>(

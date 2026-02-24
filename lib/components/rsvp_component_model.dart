@@ -13,24 +13,10 @@ class RsvpComponentModel extends FlutterFlowModel<RsvpComponentWidget> {
       choiceChipsValueController?.value?.firstOrNull;
   set choiceChipsValue(String? val) =>
       choiceChipsValueController?.value = val != null ? [val] : [];
-  // Stores action output result for [Backend Call - API (Remove RSVP for Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResultkzf;
-  // Stores action output result for [Backend Call - API (Remove RSVP for Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResultkzf2;
-  // Stores action output result for [Backend Call - API (Add RSVP to Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResulttcq;
-  // Stores action output result for [Backend Call - API (Remove RSVP for Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResultkzf3;
-  // Stores action output result for [Backend Call - API (Remove RSVP for Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResultkzf4;
-  // Stores action output result for [Backend Call - API (Add RSVP to Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResulttcq2;
-  // Stores action output result for [Backend Call - API (Remove RSVP for Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResultkzf5;
-  // Stores action output result for [Backend Call - API (Remove RSVP for Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResultkzf6;
-  // Stores action output result for [Backend Call - API (Add RSVP to Team Event)] action in ChoiceChips widget.
-  ApiCallResponse? apiResulttcq3;
+  // Stores action output result for [Backend Call - API (Update Event RSVP)] action in ChoiceChips widget.
+  ApiCallResponse? apiResult85o;
+  // Stores action output result for [Backend Call - API (Add New Event RSVP)] action in ChoiceChips widget.
+  ApiCallResponse? apiResult8xy;
 
   @override
   void initState(BuildContext context) {}

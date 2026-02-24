@@ -111,6 +111,11 @@ class FFAppState extends ChangeNotifier {
           await secureStorage.getStringList('ff_campaignObjectIds') ??
               _campaignObjectIds;
     });
+    await _safeInitAsync(() async {
+      _currentPlayerIndex =
+          await secureStorage.getInt('ff_currentPlayerIndex') ??
+              _currentPlayerIndex;
+    });
   }
 
   void update(VoidCallback callback) {
@@ -462,6 +467,17 @@ class FFAppState extends ChangeNotifier {
   void insertAtIndexInCampaignObjectIds(int index, String value) {
     campaignObjectIds.insert(index, value);
     secureStorage.setStringList('ff_campaignObjectIds', _campaignObjectIds);
+  }
+
+  int _currentPlayerIndex = 0;
+  int get currentPlayerIndex => _currentPlayerIndex;
+  set currentPlayerIndex(int value) {
+    _currentPlayerIndex = value;
+    secureStorage.setInt('ff_currentPlayerIndex', value);
+  }
+
+  void deleteCurrentPlayerIndex() {
+    secureStorage.delete(key: 'ff_currentPlayerIndex');
   }
 }
 

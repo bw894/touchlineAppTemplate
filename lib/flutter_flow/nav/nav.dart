@@ -131,6 +131,11 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
               ParamType.String,
             ),
           ),
+        ),
+        FFRoute(
+          name: YouthMainScreenWidget.routeName,
+          path: YouthMainScreenWidget.routePath,
+          builder: (context, params) => YouthMainScreenWidget(),
         )
       ].map((r) => r.toRoute(appStateNotifier)).toList(),
     );

@@ -1216,7 +1216,7 @@ class _YourAccountComponentWidgetState
                                           context.pushNamed(
                                             TeamSelectWidget.routeName,
                                             extra: <String, dynamic>{
-                                              kTransitionInfoKey:
+                                              '__transition_info__':
                                                   TransitionInfo(
                                                 hasTransition: true,
                                                 transitionType:

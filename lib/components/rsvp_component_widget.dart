@@ -3,10 +3,9 @@ import '/flutter_flow/flutter_flow_choice_chips.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/form_field_controller.dart';
-import '/actions/actions.dart' as action_blocks;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+import 'package:webviewx_plus/webviewx_plus.dart';
 import 'rsvp_component_model.dart';
 export 'rsvp_component_model.dart';
 
@@ -14,19 +13,17 @@ class RsvpComponentWidget extends StatefulWidget {
   const RsvpComponentWidget({
     super.key,
     this.playerName,
-    this.isRSVPYes,
-    this.isRSVPNo,
-    this.isRSVPUnsure,
     required this.playerObjectId,
     required this.eventObjectId,
+    required this.currentRSVP,
+    required this.currentRSVPObjectId,
   });
 
   final String? playerName;
-  final bool? isRSVPYes;
-  final bool? isRSVPNo;
-  final bool? isRSVPUnsure;
   final String? playerObjectId;
   final String? eventObjectId;
+  final String? currentRSVP;
+  final String? currentRSVPObjectId;
 
   @override
   State<RsvpComponentWidget> createState() => _RsvpComponentWidgetState();
@@ -58,8 +55,6 @@ class _RsvpComponentWidgetState extends State<RsvpComponentWidget> {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<FFAppState>();
-
     return Container(
       width: MediaQuery.sizeOf(context).width * 1.0,
       decoration: BoxDecoration(
@@ -115,293 +110,71 @@ class _RsvpComponentWidgetState extends State<RsvpComponentWidget> {
                 onChanged: (val) async {
                   safeSetState(
                       () => _model.choiceChipsValue = val?.firstOrNull);
-                  var _shouldSetState = false;
-                  if (_model.choiceChipsValue == 'YES') {
-                    if (widget.isRSVPYes!) {
-                      if (_shouldSetState) safeSetState(() {});
-                      return;
-                    }
-
-                    if (widget.isRSVPNo!) {
-                      _model.apiResultkzf =
-                          await TeamsGroup.removeRSVPForTeamEventCall.call(
-                        playerObjectId: widget.playerObjectId,
-                        teamEventObjectId: widget.eventObjectId,
-                        rsvp: 'NO',
-                        userToken: FFAppState().userToken,
-                        bLappId: FFLibraryValues().BLProjectId,
-                        bLRestApiKey: FFLibraryValues().BLRestAPIKey,
-                      );
-
-                      _shouldSetState = true;
-                      if (!(_model.apiResultkzf?.succeeded ?? true)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Failed to remove NO',
-                              style: TextStyle(
-                                color: FlutterFlowTheme.of(context).primaryText,
-                              ),
-                            ),
-                            duration: Duration(milliseconds: 1750),
-                            backgroundColor: FlutterFlowTheme.of(context).error,
-                          ),
-                        );
-                      }
-                    } else {
-                      // If this is false, there is no current RSVP, addition-only is therefore fine
-                      if (widget.isRSVPUnsure!) {
-                        _model.apiResultkzf2 =
-                            await TeamsGroup.removeRSVPForTeamEventCall.call(
-                          playerObjectId: widget.playerObjectId,
-                          teamEventObjectId: widget.eventObjectId,
-                          rsvp: 'UNSURE',
-                          userToken: FFAppState().userToken,
-                          bLappId: FFLibraryValues().BLProjectId,
-                          bLRestApiKey: FFLibraryValues().BLRestAPIKey,
-                        );
-
-                        _shouldSetState = true;
-                        if (!(_model.apiResultkzf2?.succeeded ?? true)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Failed to remove UNSURE',
-                                style: TextStyle(
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                ),
-                              ),
-                              duration: Duration(milliseconds: 1750),
-                              backgroundColor:
-                                  FlutterFlowTheme.of(context).error,
-                            ),
-                          );
-                        }
-                      }
-                    }
-
-                    _model.apiResulttcq =
-                        await TeamsGroup.addRSVPToTeamEventCall.call(
-                      teamEventObjectId: widget.eventObjectId,
-                      rsvp: 'YES',
-                      playerObjectId: widget.playerObjectId,
-                      userToken: FFAppState().userToken,
+                  if (widget.currentRSVPObjectId != null &&
+                      widget.currentRSVPObjectId != '') {
+                    _model.apiResult85o =
+                        await YouthManagementGroup.updateEventRSVPCall.call(
+                      rsvpObjectId: widget.currentRSVPObjectId,
+                      status: _model.choiceChipsValue,
                       bLappId: FFLibraryValues().BLProjectId,
                       bLRestApiKey: FFLibraryValues().BLRestAPIKey,
                     );
 
-                    _shouldSetState = true;
-                    if (!(_model.apiResulttcq?.succeeded ?? true)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            'Failed to add YES',
-                            style: TextStyle(
-                              color: FlutterFlowTheme.of(context).primaryText,
+                    if (!(_model.apiResult85o?.succeeded ?? true)) {
+                      await showDialog(
+                        context: context,
+                        builder: (alertDialogContext) {
+                          return WebViewAware(
+                            child: AlertDialog(
+                              title: Text('Update error'),
+                              content:
+                                  Text((_model.apiResult85o?.bodyText ?? '')),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(alertDialogContext),
+                                  child: Text('Ok'),
+                                ),
+                              ],
                             ),
-                          ),
-                          duration: Duration(milliseconds: 1750),
-                          backgroundColor: FlutterFlowTheme.of(context).error,
-                        ),
+                          );
+                        },
                       );
                     }
                   } else {
-                    if (_model.choiceChipsValue == 'NO') {
-                      if (widget.isRSVPNo!) {
-                        if (_shouldSetState) safeSetState(() {});
-                        return;
-                      }
+                    _model.apiResult8xy =
+                        await YouthManagementGroup.addNewEventRSVPCall.call(
+                      eventObjectId: widget.eventObjectId,
+                      playerObjectId: widget.playerObjectId,
+                      status: _model.choiceChipsValue,
+                      bLappId: FFLibraryValues().BLProjectId,
+                      bLRestApiKey: FFLibraryValues().BLRestAPIKey,
+                    );
 
-                      if (widget.isRSVPYes!) {
-                        _model.apiResultkzf3 =
-                            await TeamsGroup.removeRSVPForTeamEventCall.call(
-                          playerObjectId: widget.playerObjectId,
-                          teamEventObjectId: widget.eventObjectId,
-                          rsvp: 'YES',
-                          userToken: FFAppState().userToken,
-                          bLappId: FFLibraryValues().BLProjectId,
-                          bLRestApiKey: FFLibraryValues().BLRestAPIKey,
-                        );
-
-                        _shouldSetState = true;
-                        if (!(_model.apiResultkzf3?.succeeded ?? true)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Failed to remove YES',
-                                style: TextStyle(
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
+                    if (!(_model.apiResult8xy?.succeeded ?? true)) {
+                      await showDialog(
+                        context: context,
+                        builder: (alertDialogContext) {
+                          return WebViewAware(
+                            child: AlertDialog(
+                              title: Text('Create error'),
+                              content:
+                                  Text((_model.apiResult8xy?.bodyText ?? '')),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(alertDialogContext),
+                                  child: Text('Ok'),
                                 ),
-                              ),
-                              duration: Duration(milliseconds: 1750),
-                              backgroundColor:
-                                  FlutterFlowTheme.of(context).error,
+                              ],
                             ),
                           );
-                        }
-                      } else {
-                        if (widget.isRSVPUnsure!) {
-                          _model.apiResultkzf4 =
-                              await TeamsGroup.removeRSVPForTeamEventCall.call(
-                            playerObjectId: widget.playerObjectId,
-                            teamEventObjectId: widget.eventObjectId,
-                            rsvp: 'UNSURE',
-                            userToken: FFAppState().userToken,
-                            bLappId: FFLibraryValues().BLProjectId,
-                            bLRestApiKey: FFLibraryValues().BLRestAPIKey,
-                          );
-
-                          _shouldSetState = true;
-                          if (!(_model.apiResultkzf4?.succeeded ?? true)) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Failed to remove UNSURE',
-                                  style: TextStyle(
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
-                                  ),
-                                ),
-                                duration: Duration(milliseconds: 1750),
-                                backgroundColor:
-                                    FlutterFlowTheme.of(context).error,
-                              ),
-                            );
-                          }
-                        }
-                      }
-
-                      _model.apiResulttcq2 =
-                          await TeamsGroup.addRSVPToTeamEventCall.call(
-                        teamEventObjectId: widget.eventObjectId,
-                        rsvp: 'NO',
-                        playerObjectId: widget.playerObjectId,
-                        userToken: FFAppState().userToken,
-                        bLappId: FFLibraryValues().BLProjectId,
-                        bLRestApiKey: FFLibraryValues().BLRestAPIKey,
+                        },
                       );
-
-                      _shouldSetState = true;
-                      if (!(_model.apiResulttcq2?.succeeded ?? true)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Failed to add NO',
-                              style: TextStyle(
-                                color: FlutterFlowTheme.of(context).primaryText,
-                              ),
-                            ),
-                            duration: Duration(milliseconds: 1750),
-                            backgroundColor: FlutterFlowTheme.of(context).error,
-                          ),
-                        );
-                      }
-                    } else {
-                      // It is impossible for this to be false
-                      if (_model.choiceChipsValue == 'UNSURE') {
-                        if (widget.isRSVPUnsure!) {
-                          if (_shouldSetState) safeSetState(() {});
-                          return;
-                        }
-
-                        if (widget.isRSVPYes!) {
-                          _model.apiResultkzf5 =
-                              await TeamsGroup.removeRSVPForTeamEventCall.call(
-                            playerObjectId: widget.playerObjectId,
-                            teamEventObjectId: widget.eventObjectId,
-                            rsvp: 'YES',
-                            userToken: FFAppState().userToken,
-                            bLappId: FFLibraryValues().BLProjectId,
-                            bLRestApiKey: FFLibraryValues().BLRestAPIKey,
-                          );
-
-                          _shouldSetState = true;
-                          if (!(_model.apiResultkzf5?.succeeded ?? true)) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Failed to remove YES',
-                                  style: TextStyle(
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryText,
-                                  ),
-                                ),
-                                duration: Duration(milliseconds: 1750),
-                                backgroundColor:
-                                    FlutterFlowTheme.of(context).error,
-                              ),
-                            );
-                          }
-                        } else {
-                          if (widget.isRSVPNo!) {
-                            _model.apiResultkzf6 = await TeamsGroup
-                                .removeRSVPForTeamEventCall
-                                .call(
-                              playerObjectId: widget.playerObjectId,
-                              teamEventObjectId: widget.eventObjectId,
-                              rsvp: 'NO',
-                              userToken: FFAppState().userToken,
-                              bLappId: FFLibraryValues().BLProjectId,
-                              bLRestApiKey: FFLibraryValues().BLRestAPIKey,
-                            );
-
-                            _shouldSetState = true;
-                            if (!(_model.apiResultkzf6?.succeeded ?? true)) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Failed to remove NO',
-                                    style: TextStyle(
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                    ),
-                                  ),
-                                  duration: Duration(milliseconds: 1750),
-                                  backgroundColor:
-                                      FlutterFlowTheme.of(context).error,
-                                ),
-                              );
-                            }
-                          }
-                        }
-                      } else {
-                        if (_shouldSetState) safeSetState(() {});
-                        return;
-                      }
-
-                      _model.apiResulttcq3 =
-                          await TeamsGroup.addRSVPToTeamEventCall.call(
-                        teamEventObjectId: widget.eventObjectId,
-                        rsvp: 'UNSURE',
-                        playerObjectId: widget.playerObjectId,
-                        userToken: FFAppState().userToken,
-                        bLappId: FFLibraryValues().BLProjectId,
-                        bLRestApiKey: FFLibraryValues().BLRestAPIKey,
-                      );
-
-                      _shouldSetState = true;
-                      if (!(_model.apiResulttcq3?.succeeded ?? true)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Failed to add UNSURE',
-                              style: TextStyle(
-                                color: FlutterFlowTheme.of(context).primaryText,
-                              ),
-                            ),
-                            duration: Duration(milliseconds: 1750),
-                            backgroundColor: FlutterFlowTheme.of(context).error,
-                          ),
-                        );
-                      }
                     }
                   }
 
-                  await action_blocks.refreshUserData(context);
                   safeSetState(() {});
-                  if (_shouldSetState) safeSetState(() {});
                 },
                 selectedChipStyle: ChipStyle(
                   backgroundColor: Colors.white,
@@ -492,19 +265,7 @@ class _RsvpComponentWidgetState extends State<RsvpComponentWidget> {
                 alignment: WrapAlignment.center,
                 controller: _model.choiceChipsValueController ??=
                     FormFieldController<List<String>>(
-                  [
-                    () {
-                      if (widget.isRSVPYes!) {
-                        return 'YES';
-                      } else if (widget.isRSVPNo!) {
-                        return 'NO';
-                      } else if (widget.isRSVPUnsure!) {
-                        return 'UNSURE';
-                      } else {
-                        return null;
-                      }
-                    }()
-                  ],
+                  [widget.currentRSVP!],
                 ),
                 wrapped: true,
               ),
