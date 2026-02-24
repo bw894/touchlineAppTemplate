@@ -3,7 +3,10 @@
     "allow": [
       "Bash(dart pub global activate:*)",
       "Bash(dart pub global list:*)",
-      "Bash(dart:*)"
+      "Bash(dart:*)",
+      "Bash(python:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
