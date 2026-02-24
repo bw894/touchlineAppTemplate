@@ -1,0 +1,17 @@
+name: theming
+description: Touchline ThemeData factory, ClubThemeConfig, and TouchlineColors ThemeExtension.
+publish_to: 'none'
+version: 0.0.1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: 6.3.3
+
+dev_dependencies:
+  flutter_lints: 4.0.0
+  flutter_test:
+    sdk: flutter

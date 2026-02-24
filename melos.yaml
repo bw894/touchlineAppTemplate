@@ -1,0 +1,53 @@
+name: touchline
+
+# sdkPath: auto  # Uncomment if melos cannot find the Flutter SDK automatically
+
+packages:
+  - packages/*
+  - apps/*
+
+# ─── Running melos on Windows ───────────────────────────────────────────────
+# Run melos from PowerShell or Windows CMD, not Git Bash.
+# Git Bash translates paths to Unix format (/c/Users/...) which prevents melos
+# from detecting the workspace root on Windows.
+#
+# In PowerShell:
+#   $env:PATH += ";$env:LOCALAPPDATA\Pub\Cache\bin"
+#   melos bootstrap
+#
+# Or run a specific script:
+#   melos run lint
+# ─────────────────────────────────────────────────────────────────────────────
+
+scripts:
+  lint:
+    run: melos exec -- dart analyze --fatal-infos
+    description: Analyze all packages for errors and warnings
+
+  lint:fix:
+    run: melos exec -- dart fix --apply
+    description: Auto-fix lint issues across all packages
+
+  test:
+    run: melos exec --fail-fast -- flutter test
+    description: Run tests in all packages
+
+  test:coverage:
+    run: melos exec -- flutter test --coverage
+    description: Run tests with coverage
+
+  clean:
+    run: melos exec -- flutter clean
+    description: Clean all packages
+
+  format:
+    run: melos exec -- dart format lib test
+    description: Format all Dart files
+
+  build:apk:
+    run: melos exec --scope="*app*" -- flutter build apk --release
+    description: Build release APKs for all club apps
+
+  gen:
+    run: melos exec -- dart run build_runner build --delete-conflicting-outputs
+    description: Run code generation across all packages

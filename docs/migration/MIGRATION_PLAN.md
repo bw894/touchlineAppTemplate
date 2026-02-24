@@ -339,47 +339,140 @@ class TitleWidget extends StatelessWidget {
 
 ## Section 5 — AppConfig Interface
 
+### 5.1 Design principles
+
+`AppConfig` is a **concrete base class**, not abstract. Club configs use `extends`, not `implements`.
+
+Rules:
+- **Required fields** (identity, API credentials, theme) default to `throw UnimplementedError(fieldName)`. The app compiles without override, but crashes immediately at runtime if missing — surfaces the gap quickly without forcing all clubs to update simultaneously.
+- **Optional fields** (feature flags, variant choices, sub-configs) have sensible defaults. Adding a new optional field is **non-breaking** for all existing club configs.
+- **Feature-area config** is grouped into sub-config objects (see 5.3). New feature parameters are added to the relevant sub-config, not to the top-level class, so `AppConfig` stays readable and top-level changes are rare.
+- **Deprecated fields** get `@Deprecated('...')` annotation and are never removed until all club configs have migrated.
+
+### 5.2 Top-level AppConfig
+
 ```dart
 // packages/core_ui/lib/src/config/app_config.dart
-abstract class AppConfig {
-  // Identity
-  String get clubFullName;
-  String get clubShortName;
-  String get clubAbbreviation;
-  String get nicknamePlural;
+class AppConfig {
+  const AppConfig();
 
-  // Assets
-  String get badgeAssetPath;
-  String get badgeOnPrimaryAssetPath;
+  // --- Required: identity ---
+  String get clubFullName       => throw UnimplementedError('clubFullName');
+  String get clubShortName      => throw UnimplementedError('clubShortName');
+  String get clubAbbreviation   => throw UnimplementedError('clubAbbreviation');
+  String get nicknamePlural     => throw UnimplementedError('nicknamePlural');
 
-  // API
-  String get apiBaseUrl;
-  String get projectId;
-  String get restApiKey;
-  String get focusTeamObjectId;
+  // --- Required: assets ---
+  String get badgeAssetPath             => throw UnimplementedError('badgeAssetPath');
+  String get badgeOnPrimaryAssetPath    => throw UnimplementedError('badgeOnPrimaryAssetPath');
 
-  // Links
-  String get ticketingUrl;
-  String get deepLinkUrl;
+  // --- Required: API ---
+  String get apiBaseUrl         => throw UnimplementedError('apiBaseUrl');
+  String get projectId          => throw UnimplementedError('projectId');
+  String get restApiKey         => throw UnimplementedError('restApiKey');
+  String get focusTeamObjectId  => throw UnimplementedError('focusTeamObjectId');
 
-  // Branding
-  ClubThemeConfig get theme;
-  BorderRadius get cardBorderRadius;
+  // --- Required: links ---
+  String get ticketingUrl       => throw UnimplementedError('ticketingUrl');
+  String get deepLinkUrl        => throw UnimplementedError('deepLinkUrl');
 
-  // Component variant selection
-  XFeedVariant get xFeedVariant;
-  NextFixtureSliderVariant get nextFixtureSliderVariant;
-  SquadHubSliderVariant get squadHubSliderVariant;
-  PlayerProfileVariant get playerProfileVariant;
-  LeagueTableVariant get leagueTableVariant;
-  NewsFeedVariant get newsFeedVariant;
-  SocialIconsVariant get socialIconsVariant;
-  AppBarVariant get appBarVariant;
-  // ... all other variant choices
+  // --- Required: branding ---
+  ClubThemeConfig get theme     => throw UnimplementedError('theme');
+  BorderRadius get cardBorderRadius => BorderRadius.circular(8);
+
+  // --- Optional: component variant selection (defaults match v1/standard layout) ---
+  XFeedVariant get xFeedVariant                         => XFeedVariant.card;
+  NextFixtureSliderVariant get nextFixtureSliderVariant => NextFixtureSliderVariant.stack;
+  SquadHubSliderVariant get squadHubSliderVariant       => SquadHubSliderVariant.carousel;
+  PlayerProfileVariant get playerProfileVariant         => PlayerProfileVariant.standard;
+  LeagueTableVariant get leagueTableVariant             => LeagueTableVariant.full;
+  NewsFeedVariant get newsFeedVariant                   => NewsFeedVariant.cards;
+  SocialIconsVariant get socialIconsVariant             => SocialIconsVariant.horizontal;
+  AppBarVariant get appBarVariant                       => AppBarVariant.standard;
+  PredictorVariant get predictorVariant                 => PredictorVariant.standard;
+
+  // --- Optional: feature sub-configs (all features enabled by default) ---
+  ShopConfig get shop             => const ShopConfig();
+  YouthConfig get youth           => const YouthConfig();
+  ProgrammesConfig get programmes => const ProgrammesConfig();
+  // New features: add a sub-config getter here with a default instance.
+  // Existing club configs require no changes.
 }
 
 final appConfigProvider = Provider<AppConfig>((ref) => throw UnimplementedError());
 ```
+
+### 5.3 Feature sub-config objects
+
+Each sub-config is a standalone `const`-constructable class with all fields defaulted. Clubs override only what they need.
+
+```dart
+// packages/core_ui/lib/src/config/shop_config.dart
+class ShopConfig {
+  const ShopConfig();
+  bool get enabled          => true;
+  bool get guestCheckout    => false;
+  int  get maxCartItems     => 20;
+}
+
+// packages/core_ui/lib/src/config/youth_config.dart
+class YouthConfig {
+  const YouthConfig();
+  bool get enabled          => true;
+  bool get showPaymentPlans => true;
+}
+
+// packages/core_ui/lib/src/config/programmes_config.dart
+class ProgrammesConfig {
+  const ProgrammesConfig();
+  bool get enabled          => true;
+}
+```
+
+Each new feature package ships its own `XxxConfig` class in its own package. `AppConfig` gains one new getter returning the default instance — zero changes required in any existing club config.
+
+### 5.4 Adding new config fields — decision table
+
+| Change type | Method | Breaking for existing clubs? |
+|---|---|---|
+| New optional variant / flag | Concrete getter with default value | No |
+| New required credential / identity field | `throw UnimplementedError(name)` | Runtime error only — compile passes |
+| New feature area | New `XxxConfig` sub-class + one getter on `AppConfig` | No |
+| New field within existing sub-config | Concrete getter with default in sub-config class | No |
+| Deprecated field | Add `@Deprecated('Use X instead — remove by vN.N')` | No |
+| Field removal | Remove only after all club configs have migrated | — |
+
+### 5.5 Example club config
+
+```dart
+// apps/club_app_1/lib/app_config.dart
+class HarriersConfig extends AppConfig {
+  const HarriersConfig();
+
+  @override String get clubFullName      => 'Harriers FC';
+  @override String get clubShortName     => 'Harriers';
+  @override String get clubAbbreviation  => 'HFC';
+  @override String get nicknamePlural    => 'The Harriers';
+
+  @override String get badgeAssetPath            => 'assets/badge.png';
+  @override String get badgeOnPrimaryAssetPath   => 'assets/badge_on_primary.png';
+
+  @override String get apiBaseUrl        => 'https://api.touchlineclub.com:7500/harriers/xxx';
+  @override String get projectId         => 'harriers';
+  @override String get restApiKey        => 'xxx';
+  @override String get focusTeamObjectId => 'xxx';
+
+  @override String get ticketingUrl      => 'https://harriers.com/tickets';
+  @override String get deepLinkUrl       => 'https://harriers.com';
+
+  @override ClubThemeConfig get theme    => const HarriersTheme();
+
+  // Only override variants that differ from defaults
+  @override XFeedVariant get xFeedVariant => XFeedVariant.carousel;
+
+  // Only override sub-configs where defaults need changing
+  @override ShopConfig get shop => const ShopConfig(guestCheckout: true);
+}
 
 ---
 
@@ -418,14 +511,15 @@ Apply these rules to every widget during migration (do not do it as a separate p
 **Goal:** Create the skeleton. No logic moved yet.
 **Estimated time with Claude Code: 2–4 hours**
 
-- [ ] Create `melos.yaml` at repo root
-- [ ] Create `analysis_options.yaml` at repo root (strict lints)
-- [ ] Create package directories: `packages/core_ui`, `packages/theming`, `packages/api_client`, `packages/feature_match_centre`, `packages/feature_player`, `packages/feature_predictor`, `packages/feature_news`, `packages/feature_auth`, `packages/feature_shop`, `packages/feature_events`, `packages/feature_programmes`, `packages/feature_league`
-- [ ] Create `pubspec.yaml` for each package (empty `lib/src/` placeholder)
-- [ ] Create `apps/club_app_1/` directory structure
-- [ ] Create `apps/_template/` directory structure
-- [ ] Run `melos bootstrap` — verify workspace links
-- [ ] Commit: "chore: monorepo scaffold"
+- [x] Create `melos.yaml` at repo root
+- [x] Create `analysis_options.yaml` at repo root (strict lints)
+- [x] Create package directories: `packages/core_ui`, `packages/theming`, `packages/api_client`, `packages/feature_match_centre`, `packages/feature_player`, `packages/feature_predictor`, `packages/feature_news`, `packages/feature_auth`, `packages/feature_shop`, `packages/feature_events`, `packages/feature_programmes`, `packages/feature_league`
+- [x] Create `pubspec.yaml` for each package (empty `lib/src/` placeholder)
+- [x] Create `apps/club_app_1/` directory structure
+- [x] Create `apps/_template/` directory structure
+- [x] Run `flutter pub get` in `packages/api_client` — resolves cleanly ✓
+- [x] Note: `melos bootstrap` must be run from **PowerShell or Windows CMD** (not Git Bash) — see note in `melos.yaml`
+- [x] Commit: "chore: monorepo scaffold"
 
 ### melos.yaml template
 
@@ -488,7 +582,8 @@ No Flutter dependencies. Fully testable pure Dart.
 **Goal:** Port all FlutterFlow wrapper widgets to clean composable widgets.
 **Estimated time with Claude Code: 3–4 hours**
 
-- [ ] Create `AppConfig` abstract class and `appConfigProvider` in `packages/core_ui/lib/src/config/`
+- [ ] Create `AppConfig` concrete base class and `appConfigProvider` in `packages/core_ui/lib/src/config/app_config.dart` (see Section 5 — required fields throw `UnimplementedError`, optional fields have defaults)
+- [ ] Create feature sub-config classes (`ShopConfig`, `YouthConfig`, `ProgrammesConfig`) in `packages/core_ui/lib/src/config/` — each with `const` constructor and all fields defaulted
 - [ ] Create all variant enums (one file: `packages/core_ui/lib/src/config/component_variants.dart`)
 - [ ] Port `custom_functions.dart` → `packages/core_ui/lib/src/utils/` as extension methods:
   - `StringExtensions` (stripHtmlTags, fixBackendlessText)
@@ -921,10 +1016,28 @@ All files move unchanged. Update import prefix from `../../flutter_flow/...` to 
 Read these from `lib/app_state.dart` before Phase 4 and list them here.
 Changing a key name will log out all existing users of the app.
 
-> **TODO: Before starting Phase 4, read `lib/app_state.dart` and paste all `FlutterSecureStorage` key strings here.**
+These keys were read from `lib/app_state.dart` on 2026-02-24:
+
+| Key | Type | Field |
+|---|---|---|
+| `ff_newOrder` | `List<String>` (CSV-serialised `OrderItemsStruct`) | `newOrder` |
+| `ff_playingCommentary` | `bool` | `playingCommentary` |
+| `ff_currentUserObjectId` | `String` | `currentUserObjectId` |
+| `ff_userToken` | `String` | `userToken` |
+| `ff_currentUser` | `String` (JSON-serialised `UserStruct`) | `currentUser` |
+| `ff_cart` | `List<String>` (CSV-serialised `CartLinesStruct`) | `cart` |
+| `ff_savedShippingDetails` | `List<String>` (CSV-serialised `ShippingDetailsStruct`) | `savedShippingDetails` |
+| `ff_checkout` | `String` (JSON-serialised `CheckoutStruct`) | `checkout` |
+| `ff_bottomPaddingHeight` | `double` | `bottomPaddingHeight` |
+| `ff_campaignObjectIds` | `List<String>` (CSV-serialised strings) | `campaignObjectIds` |
+| `ff_currentPlayerIndex` | `int` | `currentPlayerIndex` |
+
+**Serialisation note:** List fields use `CsvToListConverter` / `ListToCsvConverter` from the `csv` package.
+Single structs use `jsonDecode(serializedData)` → `StructName.fromSerializableMap(...)`.
+All of this logic must be preserved exactly when migrating to `AuthNotifier` / `CartNotifier`.
 
 ---
 
 *Last updated: 2026-02-24*
-*Plan version: 1.1*
-*Changes from v1.0: Keep `flutter_spinkit`; replace canonical-version approach with enum-driven variant pattern.*
+*Plan version: 1.2*
+*Changes from v1.1: Replace `abstract class AppConfig` with concrete base class; add feature sub-config objects (`ShopConfig`, `YouthConfig`, `ProgrammesConfig`); add schema evolution decision table (Section 5.4).*
