@@ -1,0 +1,21 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  errors:
+    missing_required_param: error
+    missing_return: error
+    dead_code: warning
+    unused_import: warning
+    unused_local_variable: warning
+
+linter:
+  rules:
+    # Disable — relative imports are correct within a package
+    always_use_package_imports: false
+    # Disable — FlutterFlow-generated structs use print via kDebugMode
+    avoid_print: false
+    # Style
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    unnecessary_const: true
+    unnecessary_new: true

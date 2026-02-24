@@ -550,15 +550,15 @@ scripts:
 No Flutter dependencies. Fully testable pure Dart.
 **Estimated time with Claude Code: 2–4 hours**
 
-- [ ] Move `lib/backend/schema/structs/` (75 files) → `packages/api_client/lib/src/models/`
-- [ ] Move `lib/backend/api_requests/api_manager.dart` → `packages/api_client/lib/src/api_manager.dart`
-- [ ] Move `lib/backend/api_requests/api_calls.dart` → `packages/api_client/lib/src/endpoints/` (split into one file per API group: `backendless_endpoints.dart`, `wordpress_endpoints.dart`, `cms_endpoints.dart`, `crm_endpoints.dart`, `teams_endpoints.dart`, `auth_endpoints.dart`, `shop_endpoints.dart`, `youth_endpoints.dart`)
-- [ ] Update all imports in moved files to relative paths within `api_client`
-- [ ] Verify `api_client/pubspec.yaml` has NO Flutter SDK dependency — only `http`, `equatable`, `collection`, `uuid`
-- [ ] Run `dart analyze` in `packages/api_client/` — zero errors
-- [ ] Write serialisation round-trip tests for: `UserStruct`, `CartLinesStruct`, `SMFixtureStruct`, `LeagueTableItemStruct`, `PredictorTableItemStruct`, `PlayerStruct`
-- [ ] Run tests — all pass
-- [ ] Commit: "feat(api_client): extract data layer and API client to standalone package"
+- [x] Move `lib/backend/schema/structs/` (75 files) → `packages/api_client/lib/src/models/`
+- [x] Move `lib/backend/api_requests/api_manager.dart` → `packages/api_client/lib/src/api_manager.dart`
+- [x] Move `lib/backend/api_requests/api_calls.dart` → `packages/api_client/lib/src/endpoints/` (split into one file per API group: `backendless_endpoints.dart`, `wordpress_endpoints.dart`, `cms_endpoints.dart`, `crm_endpoints.dart`, `teams_endpoints.dart`, `auth_endpoints.dart`, `shop_endpoints.dart`, `youth_endpoints.dart`)
+- [x] Update all imports in moved files to relative paths within `api_client`
+- [x] Verify `api_client/pubspec.yaml` has NO Flutter SDK dependency — only `http`, `equatable`, `collection`, `uuid`
+- [x] Run `dart analyze` in `packages/api_client/` — zero errors
+- [x] Write serialisation round-trip tests for: `UserStruct`, `CartLinesStruct`, `SMFixtureStruct`, `LeagueTableItemStruct`, `PredictorTableItemStruct`, `PlayerStruct`
+- [x] Run tests — all pass
+- [x] Commit: "feat(api_client): extract data layer and API client to standalone package"
 
 ---
 
