@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dart pub global activate:*)",
+      "Bash(dart pub global list:*)",
+      "Bash(dart:*)"
+    ]
+  }
+}
