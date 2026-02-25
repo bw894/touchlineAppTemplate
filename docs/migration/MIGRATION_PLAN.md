@@ -610,18 +610,18 @@ No Flutter dependencies. Fully testable pure Dart.
 This is the highest-risk phase — port logic exactly, do not simplify.
 **Estimated time with Claude Code: 3–5 hours**
 
-- [ ] Create `packages/feature_auth/lib/src/auth_state.dart` (`AuthState` union: initial, loading, authenticated, guest, unauthenticated)
-- [ ] Create `packages/feature_auth/lib/src/auth_notifier.dart`:
+- [x] Create `packages/feature_auth/lib/src/auth_state.dart` (`AuthState` union: initial, loading, authenticated, guest, unauthenticated)
+- [x] Create `packages/feature_auth/lib/src/auth_notifier.dart`:
   - Read `lib/actions/actions.dart` `initalRoute()` — port ALL branching logic identically
   - Read `lib/app_state.dart` auth fields — port persistence logic identically
   - Preserve `FlutterSecureStorage` key names exactly (do NOT rename keys)
-- [ ] Create `authNotifierProvider`
-- [ ] Create `packages/feature_auth/lib/src/screens/` — port login widget(s)
-- [ ] Wire `refreshUserData()` action into notifier
-- [ ] Wire `createUserCRM()` action into notifier
-- [ ] Unit test `AuthNotifier` state transitions (mock API client)
-- [ ] Run `flutter analyze` in `packages/feature_auth/` — zero errors
-- [ ] Commit: "feat(feature_auth): implement AuthNotifier replacing FFAppState auth logic"
+- [x] Create `authNotifierProvider`
+- [x] Create `packages/feature_auth/lib/src/screens/` — port login widget(s)
+- [x] Wire `refreshUserData()` action into notifier
+- [x] Wire `createUserCRM()` action into notifier
+- [x] Unit test `AuthNotifier` state transitions (mock API client)
+- [x] Run `flutter analyze` in `packages/feature_auth/` — zero errors
+- [x] Commit: "feat(feature_auth): implement AuthNotifier replacing FFAppState auth logic"
 
 ---
 
