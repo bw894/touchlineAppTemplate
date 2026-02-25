@@ -10,7 +10,8 @@
       "Bash(C:/flutter/bin/flutter pub get:*)",
       "Bash(/c/flutter/bin/flutter pub get:*)",
       "Bash(flutter pub get)",
-      "Bash(flutter analyze --no-fatal-infos)"
+      "Bash(flutter analyze --no-fatal-infos)",
+      "Bash(flutter analyze)"
     ]
   }
 }
