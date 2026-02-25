@@ -669,10 +669,10 @@ Source files:
 - `lib/league_table/` (v1, v2, v3) → `LeagueTableWidget` with `LeagueTableVariant`
 - `lib/components/full_league_table/` (v1, v2) → included as `LeagueTableVariant.full` variants
 
-- [ ] feature_league: providers + variant enums
-- [ ] feature_league: all widgets migrated
-- [ ] feature_league: analyze clean
-- [ ] Commit: "feat(feature_league): migrate league table widgets"
+- [x] feature_league: providers + variant enums
+- [x] feature_league: all widgets migrated
+- [x] feature_league: analyze clean
+- [x] Commit: "feat(feature_league): migrate league table widgets"
 
 ### 5.3 feature_player
 

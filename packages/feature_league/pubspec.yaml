@@ -21,6 +21,9 @@ dependencies:
   # State
   flutter_riverpod: ^2.6.1
 
+  # UI extras
+  font_awesome_flutter: 10.7.0
+
   # Utils
   collection: 1.19.1
 

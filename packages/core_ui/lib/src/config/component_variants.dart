@@ -12,6 +12,10 @@ enum SquadHubSliderVariant { carousel, grid, compact, row }
 
 enum PlayerProfileVariant { standard, extended, card, compact, advanced }
 
+/// [LeagueTableWidget] layout variants.
+/// - [mini]: Compact snippet showing ±3 rows around the focus team, text highlight.
+/// - [compact]: Compact snippet with configurable focus-row background colour (v3 style).
+/// - [full]: Full scrollable table; pass [showTabs] to enable OVERALL/HOME/AWAY tab switcher.
 enum LeagueTableVariant { full, compact, mini }
 
 enum PredictorVariant { standard, legacy }
