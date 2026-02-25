@@ -24,6 +24,10 @@ dependencies:
   # UI
   lottie: 3.1.2
   smooth_page_indicator: 1.1.0
+  flutter_animate: 4.5.0
+  aligned_tooltip: 0.0.1
+  auto_size_text: 3.0.0
+  font_awesome_flutter: 10.7.0
 
   # Utils
   collection: 1.19.1

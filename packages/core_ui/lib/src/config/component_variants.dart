@@ -22,6 +22,11 @@ enum SocialIconsVariant { horizontal, vertical, compact }
 
 enum AppBarVariant { standard, compact }
 
+/// [GamesPageWidget] layout variants.
+/// - [standard]: Results + Fixtures tabs (V1).
+/// - [withEvents]: Results + Fixtures + Events tabs (V2).
+enum GamesPageVariant { standard, withEvents }
+
 enum TitleSection {
   latestNews,
   latestVideos,

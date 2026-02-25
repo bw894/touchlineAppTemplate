@@ -658,10 +658,10 @@ Source files to migrate:
 - `lib/sync_fixtures/` → `SyncFixturesWidget`, `AndroidTutorialWidget`
 - `lib/components/match_sponsors/` → `MatchSponsorsWidget`
 
-- [ ] feature_match_centre: providers + variant enums
-- [ ] feature_match_centre: all widgets migrated
-- [ ] feature_match_centre: analyze clean
-- [ ] Commit: "feat(feature_match_centre): migrate all match centre widgets"
+- [x] feature_match_centre: providers + variant enums
+- [x] feature_match_centre: all widgets migrated
+- [x] feature_match_centre: analyze clean
+- [x] Commit: "feat(feature_match_centre): migrate all match centre widgets"
 
 ### 5.2 feature_league
 
