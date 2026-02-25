@@ -682,10 +682,10 @@ Source files:
 - `lib/squad_hub/player_profile_page_v1–v5_adv/` → `PlayerProfileScreen` with `PlayerProfileVariant`
 - `lib/lineups/` → `LineupsWidget`
 
-- [ ] feature_player: providers + variant enums
-- [ ] feature_player: all widgets migrated
-- [ ] feature_player: analyze clean
-- [ ] Commit: "feat(feature_player): migrate squad hub and player profile widgets"
+- [x] feature_player: providers + variant enums
+- [x] feature_player: all widgets migrated
+- [x] feature_player: analyze clean
+- [x] Commit: "feat(feature_player): migrate squad hub and player profile widgets"
 
 ### 5.4 feature_predictor
 
