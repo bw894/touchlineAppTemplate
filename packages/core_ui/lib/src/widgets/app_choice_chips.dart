@@ -1,0 +1,167 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import 'package:core_ui/src/utils/form_field_controller.dart';
+import 'package:core_ui/src/utils/list_extensions.dart';
+
+/// Data for a single chip in [AppChoiceChips].
+class ChipData {
+  const ChipData(this.label, [this.iconData]);
+  final String label;
+  final IconData? iconData;
+}
+
+/// Visual style for selected or unselected chips in [AppChoiceChips].
+class ChipStyle {
+  const ChipStyle({
+    this.backgroundColor,
+    this.textStyle,
+    this.iconColor,
+    this.iconSize,
+    this.labelPadding,
+    this.elevation,
+    this.borderColor,
+    this.borderWidth,
+    this.borderRadius,
+  });
+  final Color? backgroundColor;
+  final TextStyle? textStyle;
+  final Color? iconColor;
+  final double? iconSize;
+  final EdgeInsetsGeometry? labelPadding;
+  final double? elevation;
+  final Color? borderColor;
+  final double? borderWidth;
+  final BorderRadius? borderRadius;
+}
+
+/// A wrapped or scrollable row of selectable chips.
+///
+/// Ported from [FlutterFlowChoiceChips] in [flutter_flow_choice_chips.dart].
+class AppChoiceChips extends StatefulWidget {
+  const AppChoiceChips({
+    super.key,
+    required this.options,
+    required this.onChanged,
+    required this.controller,
+    required this.selectedChipStyle,
+    required this.unselectedChipStyle,
+    required this.chipSpacing,
+    this.rowSpacing = 0.0,
+    required this.multiselect,
+    this.initialized = true,
+    this.alignment = WrapAlignment.start,
+    this.disabledColor,
+    this.wrapped = true,
+  });
+
+  final List<ChipData> options;
+  final void Function(List<String>?)? onChanged;
+  final FormFieldController<List<String>> controller;
+  final ChipStyle selectedChipStyle;
+  final ChipStyle unselectedChipStyle;
+  final double chipSpacing;
+  final double rowSpacing;
+  final bool multiselect;
+  final bool initialized;
+  final WrapAlignment alignment;
+  final Color? disabledColor;
+  final bool wrapped;
+
+  @override
+  State<AppChoiceChips> createState() => _AppChoiceChipsState();
+}
+
+class _AppChoiceChipsState extends State<AppChoiceChips> {
+  late List<String> _values;
+  List<String> get _selected => widget.controller.value ?? [];
+
+  @override
+  void initState() {
+    super.initState();
+    _values = List.from(_selected);
+    if (!widget.initialized && _values.isNotEmpty) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        widget.onChanged?.call(_values);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final chips = widget.options.map<Widget>((option) {
+      final selected = _selected.contains(option.label);
+      final style =
+          selected ? widget.selectedChipStyle : widget.unselectedChipStyle;
+      return Theme(
+        data: Theme.of(context).copyWith(canvasColor: Colors.transparent),
+        child: ChoiceChip(
+          selected: selected,
+          onSelected: widget.onChanged != null
+              ? (isSelected) {
+                  _values = List.from(_selected);
+                  if (isSelected) {
+                    widget.multiselect
+                        ? _values.add(option.label)
+                        : _values = [option.label];
+                    widget.controller.value = List.from(_values);
+                    setState(() {});
+                  } else if (widget.multiselect) {
+                    _values.remove(option.label);
+                    widget.controller.value = List.from(_values);
+                    setState(() {});
+                  }
+                  widget.onChanged!(_values);
+                }
+              : null,
+          label: Text(
+            option.label,
+            style: style.textStyle,
+            overflow: TextOverflow.ellipsis,
+          ),
+          labelPadding: style.labelPadding,
+          avatar: option.iconData != null
+              ? FaIcon(
+                  option.iconData,
+                  size: style.iconSize,
+                  color: style.iconColor,
+                )
+              : null,
+          elevation: style.elevation,
+          disabledColor: widget.disabledColor,
+          selectedColor:
+              selected ? widget.selectedChipStyle.backgroundColor : null,
+          backgroundColor:
+              selected ? null : widget.unselectedChipStyle.backgroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: style.borderRadius ?? BorderRadius.circular(16),
+            side: BorderSide(
+              color: style.borderColor ?? Colors.transparent,
+              width: style.borderWidth ?? 0,
+            ),
+          ),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+      );
+    }).toList();
+
+    if (widget.wrapped) {
+      return Wrap(
+        spacing: widget.chipSpacing,
+        runSpacing: widget.rowSpacing,
+        alignment: widget.alignment,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: chips,
+      );
+    }
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: chips.divide(SizedBox(width: widget.chipSpacing)),
+      ),
+    );
+  }
+}

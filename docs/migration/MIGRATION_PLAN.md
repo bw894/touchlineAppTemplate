@@ -582,25 +582,25 @@ No Flutter dependencies. Fully testable pure Dart.
 **Goal:** Port all FlutterFlow wrapper widgets to clean composable widgets.
 **Estimated time with Claude Code: 3–4 hours**
 
-- [ ] Create `AppConfig` concrete base class and `appConfigProvider` in `packages/core_ui/lib/src/config/app_config.dart` (see Section 5 — required fields throw `UnimplementedError`, optional fields have defaults)
-- [ ] Create feature sub-config classes (`ShopConfig`, `YouthConfig`, `ProgrammesConfig`) in `packages/core_ui/lib/src/config/` — each with `const` constructor and all fields defaulted
-- [ ] Create all variant enums (one file: `packages/core_ui/lib/src/config/component_variants.dart`)
-- [ ] Port `custom_functions.dart` → `packages/core_ui/lib/src/utils/` as extension methods:
+- [x] Create `AppConfig` concrete base class and `appConfigProvider` in `packages/core_ui/lib/src/config/app_config.dart` (see Section 5 — required fields throw `UnimplementedError`, optional fields have defaults)
+- [x] Create feature sub-config classes (`ShopConfig`, `YouthConfig`, `ProgrammesConfig`) in `packages/core_ui/lib/src/config/` — each with `const` constructor and all fields defaulted
+- [x] Create all variant enums (one file: `packages/core_ui/lib/src/config/component_variants.dart`)
+- [x] Port `custom_functions.dart` → `packages/core_ui/lib/src/utils/` as extension methods:
   - `StringExtensions` (stripHtmlTags, fixBackendlessText)
   - `DateTimeExtensions` (parseDateTime, convertFromMills, formatting)
   - `NumExtensions` (calculateSubtotal, formatting)
-- [ ] Port `FlutterFlowButtonWidget` → `AppButton` (preserve all existing visual parameters)
-- [ ] Port `FlutterFlowIconButton` → `AppIconButton`
-- [ ] Port `FlutterFlowChoiceChips` → `AppChoiceChips`
-- [ ] Port `FlutterFlowDropDown` → `AppDropdown`
-- [ ] Port `FlutterFlowCountController` → `AppCountController`
-- [ ] Port `FlutterFlowButtonTabBar` → `AppTabBar`
-- [ ] Port `FlutterFlowExpandedImageView` → `AppImageViewer`
-- [ ] Keep `KeepAliveWrapper` — move to `core_ui` unchanged
-- [ ] Port `flutter_flow_util.dart` URL launching, number formatting → `core_ui/utils/`
-- [ ] Add `flutter_spinkit` dependency to `core_ui` — create `AppLoader` widget wrapping `SpinKitThreeBounce` (or preferred variant) so spinner style is centrally controlled
-- [ ] Run `flutter analyze` in `packages/core_ui/` — zero errors
-- [ ] Commit: "feat(core_ui): port all FlutterFlow wrapper widgets to clean components"
+- [x] Port `FlutterFlowButtonWidget` → `AppButton` (preserve all existing visual parameters)
+- [x] Port `FlutterFlowIconButton` → `AppIconButton`
+- [x] Port `FlutterFlowChoiceChips` → `AppChoiceChips`
+- [x] Port `FlutterFlowDropDown` → `AppDropdown`
+- [x] Port `FlutterFlowCountController` → `AppCountController`
+- [x] Port `FlutterFlowButtonTabBar` → `AppTabBar`
+- [x] Port `FlutterFlowExpandedImageView` → `AppImageViewer`
+- [x] Keep `KeepAliveWrapper` — move to `core_ui` unchanged
+- [x] Port `flutter_flow_util.dart` URL launching, number formatting → `core_ui/utils/`
+- [x] Add `flutter_spinkit` dependency to `core_ui` — create `AppLoader` widget wrapping `SpinKitThreeBounce` (or preferred variant) so spinner style is centrally controlled
+- [x] Run `flutter analyze` in `packages/core_ui/` — zero errors
+- [x] Commit: "feat(core_ui): port all FlutterFlow wrapper widgets to clean components"
 
 ---
 
