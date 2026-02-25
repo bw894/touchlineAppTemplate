@@ -567,13 +567,13 @@ No Flutter dependencies. Fully testable pure Dart.
 **Goal:** Replace `FlutterFlowTheme` with standard `ThemeData`.
 **Estimated time with Claude Code: 2–3 hours**
 
-- [ ] Create `packages/theming/lib/src/club_theme_config.dart` — port all colour and typography fields from `FlutterFlowTheme` (see Section 3)
-- [ ] Create `packages/theming/lib/src/touchline_colors.dart` — `ThemeExtension` for custom colours (`predictorRed`, `predictorOrange`, `predictorGreen`, `shopBorder`, `shopDark`)
-- [ ] Create `packages/theming/lib/src/app_theme.dart` — `AppTheme.build(ClubThemeConfig)` factory
-- [ ] Create `packages/theming/lib/src/text_theme.dart` — port all typography from `FlutterFlowTheme` (displayLarge → labelSmall)
-- [ ] Write unit test: build a `ThemeData` and assert all expected colour/text style values are present
-- [ ] Run `flutter analyze` in `packages/theming/` — zero errors
-- [ ] Commit: "feat(theming): implement ThemeData factory replacing FlutterFlowTheme"
+- [x] Create `packages/theming/lib/src/club_theme_config.dart` — port all colour and typography fields from `FlutterFlowTheme` (see Section 3)
+- [x] Create `packages/theming/lib/src/touchline_colors.dart` — `ThemeExtension` for custom colours (`predictorRed`, `predictorOrange`, `predictorGreen`, `shopBorder`, `shopDark`)
+- [x] Create `packages/theming/lib/src/app_theme.dart` — `AppTheme.build(ClubThemeConfig)` factory
+- [x] Create `packages/theming/lib/src/text_theme.dart` — port all typography from `FlutterFlowTheme` (displayLarge → labelSmall)
+- [x] Write unit test: build a `ThemeData` and assert all expected colour/text style values are present
+- [x] Run `flutter analyze` in `packages/theming/` — zero errors
+- [x] Commit: "feat(theming): implement ThemeData factory replacing FlutterFlowTheme"
 
 ---
 
