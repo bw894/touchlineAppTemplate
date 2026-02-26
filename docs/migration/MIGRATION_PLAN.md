@@ -747,10 +747,10 @@ Source files:
 - `lib/components/campaign/` → `CampaignWidget`
 - FFAppState: `campaignObjectIds` → `campaignProvider`
 
-- [ ] feature_events: providers + variant enums
-- [ ] feature_events: all widgets migrated
-- [ ] feature_events: analyze clean
-- [ ] Commit: "feat(feature_events): migrate events, RSVP, youth and interactive hub"
+- [x] feature_events: providers + variant enums
+- [x] feature_events: all widgets migrated
+- [x] feature_events: analyze clean
+- [x] Commit: "feat(feature_events): migrate events, RSVP, youth and interactive hub"
 
 ### 5.8 feature_programmes
 
