@@ -698,10 +698,10 @@ Source files:
 - `lib/components/view_lineups_builder/` → `ViewLineupsWidget`
 - FFAppState: `selectedPlayersLineupBuilder`, `playersForLineupsBuilder` → `lineupBuilderNotifierProvider`
 
-- [ ] feature_predictor: providers (including lineupBuilder state) + variant enums
-- [ ] feature_predictor: all widgets migrated
-- [ ] feature_predictor: analyze clean
-- [ ] Commit: "feat(feature_predictor): migrate predictor, polls and lineup builder"
+- [x] feature_predictor: providers (including lineupBuilder state) + variant enums
+- [x] feature_predictor: all widgets migrated
+- [x] feature_predictor: analyze clean
+- [x] Commit: "feat(feature_predictor): migrate predictor, polls and lineup builder"
 
 ### 5.5 feature_news
 
