@@ -713,10 +713,10 @@ Source files:
 - `lib/cms/` (c_m_s_post_page_v1, combined_c_m_s_v1, events_slider_v1) → `CmsPostPage`, `CombinedCmsWidget`, `EventsSliderWidget`
 - Custom widgets: `ResponsiveHtmlViewer`, `YouTubeEmbedWidget`, `UniversalVideoEmbedWidget` → port to `feature_news`
 
-- [ ] feature_news: providers + variant enums
-- [ ] feature_news: all widgets migrated
-- [ ] feature_news: analyze clean
-- [ ] Commit: "feat(feature_news): migrate news, X feed, videos and CMS widgets"
+- [x] feature_news: providers + variant enums
+- [x] feature_news: all widgets migrated
+- [x] feature_news: analyze clean
+- [x] Commit: "feat(feature_news): migrate news, X feed, videos and CMS widgets"
 
 ### 5.6 feature_shop
 
