@@ -728,10 +728,10 @@ Source files:
 - `lib/components/checkout/` → `CheckoutWidget`
 - FFAppState: `cart`, `newOrder`, `checkout`, `savedShippingDetails` → `cartNotifierProvider`, `checkoutNotifierProvider`
 
-- [ ] feature_shop: providers (cart + checkout state)
-- [ ] feature_shop: all widgets migrated
-- [ ] feature_shop: analyze clean
-- [ ] Commit: "feat(feature_shop): migrate shop, cart and checkout widgets"
+- [x] feature_shop: providers (cart + checkout state)
+- [x] feature_shop: all widgets migrated
+- [x] feature_shop: analyze clean
+- [x] Commit: "feat(feature_shop): migrate shop, cart and checkout widgets"
 
 ### 5.7 feature_events
 

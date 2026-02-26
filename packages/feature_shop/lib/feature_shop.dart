@@ -10,9 +10,9 @@
 /// Migration note: Populated in Phase 5.6 of MIGRATION_PLAN.md
 library feature_shop;
 
-// export 'src/providers.dart';
-// export 'src/widgets/shop_product_screen.dart';
-// export 'src/widgets/cart_screen.dart';
-// export 'src/widgets/cart_item_widget.dart';
-// export 'src/widgets/cart_summary_widget.dart';
-// export 'src/widgets/checkout_widget.dart';
+export 'src/providers.dart';
+export 'src/widgets/shop_product_screen.dart';
+export 'src/widgets/cart_screen.dart';
+export 'src/widgets/cart_item_widget.dart';
+export 'src/widgets/cart_summary_widget.dart';
+export 'src/widgets/checkout_widget.dart';
