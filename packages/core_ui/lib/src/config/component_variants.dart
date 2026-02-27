@@ -31,6 +31,8 @@ enum AppBarVariant { standard, compact }
 /// - [withEvents]: Results + Fixtures + Events tabs (V2).
 enum GamesPageVariant { standard, withEvents }
 
+enum TopBitVariant { home, specific }
+
 enum TitleSection {
   latestNews,
   latestVideos,

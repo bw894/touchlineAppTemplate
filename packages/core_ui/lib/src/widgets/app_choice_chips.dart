@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -161,6 +163,132 @@ class _AppChoiceChipsState extends State<AppChoiceChips> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: chips.divide(SizedBox(width: widget.chipSpacing)),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// AppSlideChips — animated slide-up selection chips
+// ---------------------------------------------------------------------------
+
+/// Horizontally scrollable chip selector with a slide-up fill animation.
+///
+/// Ported from [TouchlineChoiceChips] in [lib/custom_code/widgets/].
+/// Unlike [AppChoiceChips], this widget manages its own index state and calls
+/// [onChanged] with the newly selected index.
+class AppSlideChips extends StatefulWidget {
+  const AppSlideChips({
+    super.key,
+    required this.options,
+    required this.initialIndex,
+    required this.onChanged,
+    required this.primaryColour,
+    required this.secondaryColour,
+    required this.bgColor,
+    this.width,
+    this.height,
+  });
+
+  final List<String> options;
+  final int initialIndex;
+  final Future<void> Function(int index) onChanged;
+  final Color primaryColour;
+  final Color secondaryColour;
+  final Color bgColor;
+  final double? width;
+  final double? height;
+
+  @override
+  State<AppSlideChips> createState() => _AppSlideChipsState();
+}
+
+class _AppSlideChipsState extends State<AppSlideChips> {
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex;
+  }
+
+  Future<void> _onTap(int index) async {
+    if (_selectedIndex == index) return;
+    setState(() => _selectedIndex = index);
+    await widget.onChanged(index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: widget.width,
+      height: widget.height,
+      color: widget.bgColor,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(widget.options.length, (i) {
+            final isSelected = i == _selectedIndex;
+            return GestureDetector(
+              onTap: () => _onTap(i),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOut,
+                margin: const EdgeInsets.symmetric(horizontal: 6),
+                width: 100,
+                height: 40,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Slide-up background fill
+                    AnimatedPositioned(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                      bottom: isSelected ? 0 : -40,
+                      child: Container(
+                        width: 100,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: widget.primaryColour,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ),
+                    // Label
+                    AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                      style: TextStyle(
+                        color: isSelected
+                            ? widget.secondaryColour
+                            : widget.primaryColour,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      child: Text(widget.options[i]),
+                    ),
+                    // Underline when not selected
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        height: isSelected ? 0 : 4,
+                        width: 60,
+                        margin: const EdgeInsets.only(top: 38),
+                        decoration: BoxDecoration(
+                          color:
+                              widget.primaryColour.withValues(alpha: 1.0),
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+        ),
       ),
     );
   }

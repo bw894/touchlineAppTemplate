@@ -13,6 +13,8 @@ dependencies:
     sdk: flutter
 
   # Internal
+  api_client:
+    path: ../api_client
   theming:
     path: ../theming
 

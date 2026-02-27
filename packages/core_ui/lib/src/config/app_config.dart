@@ -58,6 +58,7 @@ class AppConfig {
   SocialIconsVariant get socialIconsVariant             => SocialIconsVariant.horizontal;
   AppBarVariant get appBarVariant                       => AppBarVariant.standard;
   PredictorVariant get predictorVariant                 => PredictorVariant.standard;
+  TopBitVariant get topBitVariant                       => TopBitVariant.home;
 
   // --- Optional: feature sub-configs (all features enabled by default) ---
   ShopConfig get shop             => const ShopConfig();
@@ -77,3 +78,14 @@ class AppConfig {
 final appConfigProvider = Provider<AppConfig>(
   (ref) => throw UnimplementedError('appConfigProvider must be overridden'),
 );
+
+/// Riverpod provider for the authenticated user's token.
+///
+/// Defaults to empty string (unauthenticated). Override with the actual token
+/// from [feature_auth]'s [AuthNotifier] at the app entry point:
+/// ```dart
+/// userTokenProvider.overrideWith((ref) {
+///   return ref.watch(authNotifierProvider.select((s) => s.userToken));
+/// })
+/// ```
+final userTokenProvider = Provider<String>((ref) => '');
