@@ -788,8 +788,8 @@ Source files:
 Source files:
 - `lib/account/account_v1/`, `account_details/`, `account_private_public/` → port to `feature_auth`
 
-- [ ] feature_auth: account screens migrated
-- [ ] Commit: "feat(feature_auth): migrate account screens"
+- [x] feature_auth: account screens migrated
+- [x] Commit: "feat(feature_auth): migrate account screens"
 
 ---
 
