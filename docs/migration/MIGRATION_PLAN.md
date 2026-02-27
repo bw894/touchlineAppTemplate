@@ -779,9 +779,9 @@ Source files:
 - `lib/custom_code/widgets/TouchlineChoiceChips` → merge into `AppChoiceChips` in `core_ui`
 - `lib/custom_code/actions/` (2 actions) → port to `core_ui/utils/`
 
-- [ ] core_ui: shared layout components migrated (app_bar, nav_bar, top_bit, titles, social_icons)
-- [ ] core_ui: analyze clean
-- [ ] Commit: "feat(core_ui): migrate shared layout and navigation components"
+- [x] core_ui: shared layout components migrated (app_bar, nav_bar, top_bit, titles, social_icons)
+- [x] core_ui: analyze clean
+- [x] Commit: "feat(core_ui): migrate shared layout and navigation components"
 
 ### 5.10 Account screens
 

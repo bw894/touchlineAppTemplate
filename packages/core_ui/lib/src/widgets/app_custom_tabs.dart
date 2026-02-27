@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// A tab bar paired with an adaptive-height [PageView].
+/// A tab bar with adaptive-height content switching.
 ///
 /// Replaces [CustomTabsWidget] from [lib/custom_code/widgets/].
 /// [tabs] are the button labels; [builder] returns the content widget for each
-/// tab index. The [PageView] height adapts to its content (no fixed height).
+/// tab index. Uses [IndexedStack] so content height adapts naturally (avoids
+/// the bounded-height constraint of [PageView]).
 ///
-/// Uses a [StateProvider] internally so the selected tab index is accessible
-/// from outside via [tabIndexProvider].
+/// The selected index is also exposed via [tabIndexProvider] for external
+/// readers.
 final tabIndexProvider = StateProvider.autoDispose<int>((ref) => 0);
 
 class AppCustomTabs extends ConsumerStatefulWidget {
@@ -29,28 +30,15 @@ class AppCustomTabs extends ConsumerStatefulWidget {
 }
 
 class _AppCustomTabsState extends ConsumerState<AppCustomTabs> {
-  late final PageController _pageController;
   late int _selectedIndex;
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex;
-    _pageController = PageController(initialPage: _selectedIndex);
   }
 
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _goToPage(int index) async {
-    await _pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+  void _select(int index) {
     setState(() => _selectedIndex = index);
     ref.read(tabIndexProvider.notifier).state = index;
   }
@@ -66,7 +54,7 @@ class _AppCustomTabsState extends ConsumerState<AppCustomTabs> {
             children: List.generate(widget.tabs.length, (i) {
               return Expanded(
                 child: GestureDetector(
-                  onTap: () => _goToPage(i),
+                  onTap: () => _select(i),
                   child: _TabItem(
                     label: widget.tabs[i],
                     isSelected: i == _selectedIndex,
@@ -76,16 +64,13 @@ class _AppCustomTabsState extends ConsumerState<AppCustomTabs> {
             }),
           ),
         ),
-        // Adaptive-height page view — uses IntrinsicHeight on each page
-        PageView.builder(
-          controller: _pageController,
-          itemCount: widget.tabs.length,
-          onPageChanged: (i) {
-            setState(() => _selectedIndex = i);
-            ref.read(tabIndexProvider.notifier).state = i;
-          },
-          itemBuilder: (context, i) => IntrinsicHeight(
-            child: Padding(
+        // IndexedStack keeps all pages in the tree (no re-build on switch)
+        // but only the selected one is visible.
+        IndexedStack(
+          index: _selectedIndex,
+          children: List.generate(
+            widget.tabs.length,
+            (i) => Padding(
               padding: const EdgeInsets.all(12),
               child: widget.builder(i),
             ),
