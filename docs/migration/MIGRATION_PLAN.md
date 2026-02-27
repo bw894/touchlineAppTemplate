@@ -758,10 +758,10 @@ Source files:
 - `lib/programmes/digital_programme_product_page/` → `DigitalProgrammeScreen`
 - `lib/programmes/my_programmes/` → `MyProgrammesScreen`
 
-- [ ] feature_programmes: providers
-- [ ] feature_programmes: all widgets migrated
-- [ ] feature_programmes: analyze clean
-- [ ] Commit: "feat(feature_programmes): migrate digital programmes"
+- [x] feature_programmes: providers
+- [x] feature_programmes: all widgets migrated
+- [x] feature_programmes: analyze clean
+- [x] Commit: "feat(feature_programmes): migrate digital programmes"
 
 ### 5.9 Shared UI components (back into core_ui)
 
