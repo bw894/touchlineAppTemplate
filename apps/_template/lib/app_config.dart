@@ -19,6 +19,13 @@
 //   @override String get focusTeamObjectId   => 'YOUR-TEAM-OBJECT-ID';
 //   @override String get ticketingUrl        => 'https://tickets.yourclub.com';
 //   @override String get deepLinkUrl         => 'https://yourclub.app';
+//   @override String get dynalinkPublicKey   => 'YOUR-DYNALINK-PUBLIC-KEY';
+//   @override String get dynalinkProjectId   => 'your-club-name';
+//   @override String get xFeedUrl            => 'https://rss.app/feeds/v1.1/YOUR-FEED-ID.json';
+//   @override String get bgImageUrl          => 'https://yourclub.com/background.jpg';
+//   @override List<String> get backupTeamObjectIds => ['BACKUP-TEAM-ID'];
+//   @override String get settingsObjectId    => 'YOUR-SETTINGS-OBJECT-ID';
+//   @override String get touchlineAuthBaseUrl => 'https://auth.touchlineclub.com';
 //   @override BorderRadius get cardBorderRadius => BorderRadius.circular(8);
 //
 //   @override ClubThemeConfig get theme => const ClubThemeConfig(

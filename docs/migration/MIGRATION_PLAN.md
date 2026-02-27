@@ -828,7 +828,7 @@ Add these fields to `packages/core_ui/lib/src/config/app_config.dart` (all requi
 - `String get settingsObjectId` — Backendless settings record ID
 - `String get touchlineAuthBaseUrl` — Base URL for Touchline JWT exchange (e.g. `https://auth.touchlineclub.com`)
 
-- [ ] Add fields, run `flutter analyze` in `packages/core_ui` — must pass
+- [x] Add fields, run `flutter analyze` in `packages/core_ui` — must pass
 
 ### 6.2 — Revise feature_auth for Firebase + Touchline JWT
 
