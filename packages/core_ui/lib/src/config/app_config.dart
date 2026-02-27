@@ -42,6 +42,21 @@ class AppConfig {
   String get ticketingUrl => throw UnimplementedError('ticketingUrl');
   String get deepLinkUrl  => throw UnimplementedError('deepLinkUrl');
 
+  // --- Required: deep linking ---
+  String get dynalinkPublicKey  => throw UnimplementedError('dynalinkPublicKey');
+  String get dynalinkProjectId  => throw UnimplementedError('dynalinkProjectId');
+
+  // --- Required: content ---
+  String get xFeedUrl   => throw UnimplementedError('xFeedUrl');
+  String get bgImageUrl => throw UnimplementedError('bgImageUrl');
+
+  // --- Required: team data ---
+  List<String> get backupTeamObjectIds => throw UnimplementedError('backupTeamObjectIds');
+  String get settingsObjectId          => throw UnimplementedError('settingsObjectId');
+
+  // --- Required: auth ---
+  String get touchlineAuthBaseUrl => throw UnimplementedError('touchlineAuthBaseUrl');
+
   // --- Required: branding ---
   ClubThemeConfig get theme => throw UnimplementedError('theme');
 

@@ -151,7 +151,7 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>(
 ### 2.2 App entry point
 
 ```dart
-// apps/club_app_1/lib/main.dart
+// apps/harriers/lib/main.dart
 void main() {
   runApp(
     ProviderScope(
@@ -280,7 +280,7 @@ class _XFeedMinimal  extends StatelessWidget { ... }
 ```
 
 ```dart
-// apps/club_app_1/lib/app_config.dart
+// apps/harriers/lib/app_config.dart
 class HarriersConfig extends AppConfig {
   @override
   XFeedVariant get xFeedVariant => XFeedVariant.card;
@@ -445,7 +445,7 @@ Each new feature package ships its own `XxxConfig` class in its own package. `Ap
 ### 5.5 Example club config
 
 ```dart
-// apps/club_app_1/lib/app_config.dart
+// apps/harriers/lib/app_config.dart
 class HarriersConfig extends AppConfig {
   const HarriersConfig();
 
@@ -515,7 +515,7 @@ Apply these rules to every widget during migration (do not do it as a separate p
 - [x] Create `analysis_options.yaml` at repo root (strict lints)
 - [x] Create package directories: `packages/core_ui`, `packages/theming`, `packages/api_client`, `packages/feature_match_centre`, `packages/feature_player`, `packages/feature_predictor`, `packages/feature_news`, `packages/feature_auth`, `packages/feature_shop`, `packages/feature_events`, `packages/feature_programmes`, `packages/feature_league`
 - [x] Create `pubspec.yaml` for each package (empty `lib/src/` placeholder)
-- [x] Create `apps/club_app_1/` directory structure
+- [x] Create `apps/harriers/` directory structure
 - [x] Create `apps/_template/` directory structure
 - [x] Run `flutter pub get` in `packages/api_client` — resolves cleanly ✓
 - [x] Note: `melos bootstrap` must be run from **PowerShell or Windows CMD** (not Git Bash) — see note in `melos.yaml`
@@ -793,36 +793,217 @@ Source files:
 
 ---
 
-## Phase 6 — App Assembly
+## Phase 6 — Assemble apps/harriers/ (First Club App)
 
-**Goal:** Wire all packages into the first club app. Remove all FlutterFlow code.
-**Estimated time with Claude Code: 3–5 hours**
+**Goal:** Wire all packages into the Kidderminster Harriers app. Migrate auth to Firebase + Touchline JWT.
+**Estimated time with Claude Code: 5–8 hours**
 
-- [ ] Create `apps/club_app_1/lib/app_config.dart` — implement `AppConfig` with real club values from `lib/library_values.dart`
-- [ ] Create `apps/club_app_1/lib/main.dart` with `ProviderScope` + config override
-- [ ] Create `apps/club_app_1/lib/app.dart` with `MaterialApp.router`
-- [ ] Build GoRouter config using all feature screens — preserve ALL existing route paths exactly (to maintain deep links)
-- [ ] Wire `authNotifierProvider` to initial route logic
-- [ ] Move club-specific assets to `apps/club_app_1/assets/`
-- [ ] Move shared assets to `packages/core_ui/assets/`
-- [ ] Run `flutter build apk --debug` in `apps/club_app_1/` — must succeed
-- [ ] Run `flutter build ios --debug --no-codesign` — must succeed
+### Architecture pattern
+
+Each club app has three customisation layers:
+1. **Config** — `AppConfig` subclass (API keys, branding, feature flags, variants)
+2. **Composition** — `HomeScreen` + `NavbarWidget` (imports from packages, unique layout per club)
+3. **Bootstrap** — `main.dart` (Firebase services init, Dynalink, portrait lock)
+
+Packages provide all the building blocks. Club apps compose them into their unique UX.
+
+### Auth architecture (Backendless → GCP migration)
+
+Auth is Firebase-based. After Firebase sign-in, the app exchanges the Firebase ID token for a **Touchline JWT** via a Touchline auth endpoint. The JWT is stored as the bearer token under the existing key `ff_userToken` (key preserved — do NOT rename). The `api_client` call signatures remain unchanged for now; switching from Backendless REST + app keys to the Touchline GCP API is a separate migration phase after Phase 6.
+
+### 6.0 — Rename scaffold
+
+- [x] Rename `apps/club_app_1/` → `apps/harriers/` (git mv to preserve history)
+- [x] Update `melos.yaml` workspace globs if needed
+
+### 6.1 — Extend AppConfig base class
+
+Add these fields to `packages/core_ui/lib/src/config/app_config.dart` (all required — throw `UnimplementedError`):
+
+- `String get xFeedUrl` — RSS/JSON feed URL for the X/Twitter widget
+- `String get bgImageUrl` — Hero/background image URL
+- `String get dynalinkPublicKey` — Dynalink SDK public key
+- `String get dynalinkProjectId` — Dynalink project ID (matches deep-link subdomain)
+- `List<String> get backupTeamObjectIds` — Fallback team IDs for fixture queries
+- `String get settingsObjectId` — Backendless settings record ID
+- `String get touchlineAuthBaseUrl` — Base URL for Touchline JWT exchange (e.g. `https://auth.touchlineclub.com`)
+
+- [ ] Add fields, run `flutter analyze` in `packages/core_ui` — must pass
+
+### 6.2 — Revise feature_auth for Firebase + Touchline JWT
+
+**Source:** `packages/feature_auth/lib/src/auth_notifier.dart`
+
+Auth flow:
+1. User signs in via Firebase (`email/password`, `Google`, `Apple`)
+2. Call `firebaseUser.getIdToken()` → short-lived Firebase ID token
+3. POST to `{touchlineAuthBaseUrl}/auth/exchange` → receive Touchline JWT
+4. Store JWT in `FlutterSecureStorage` under key `ff_userToken` (preserved)
+5. `userTokenProvider` continues returning `ff_userToken` value — all API callers unchanged
+
+- [ ] Add to `feature_auth/pubspec.yaml`: `firebase_auth`, `google_sign_in`, `sign_in_with_apple`
+- [ ] Rewrite `AuthNotifier`:
+  - `signIn(email, password)` → Firebase email/password → exchange → store JWT
+  - `signInWithGoogle()` → GoogleSignIn → Firebase credential → exchange → store JWT
+  - `signInWithApple()` → Apple credential → Firebase credential → exchange → store JWT
+  - `restoreSession()` → read `ff_userToken` → verify JWT valid (or re-exchange via stored Firebase user)
+  - `signOut()` → `FirebaseAuth.instance.signOut()` + clear secure storage
+- [ ] `AuthAuthenticated` state carries the JWT string (used by `userTokenProvider`)
+- [ ] Update sign-in/create-account screens to call the new Firebase-backed methods
+- [ ] `firebase_core` init is in each club app's `main.dart` — `feature_auth` assumes it is already initialised
+- [ ] **Dependency note:** Touchline JWT exchange endpoint must be live for auth smoke tests to pass. If not yet available, implement with a configurable stub/mock and flag in notes.
+- [ ] `flutter analyze` in `packages/feature_auth` — zero errors
+
+### 6.3 — Implement HarriersConfig
+
+- [ ] Create `apps/harriers/lib/app_config.dart` — `HarriersConfig extends AppConfig`
+- [ ] Source values from `example_apps/harriers/lib/app_constants.dart`:
+  - `projectId` = `BLProjectId`
+  - `restApiKey` = `BLRestAPIKey`
+  - `clubFullName` = `'Kidderminster Harriers'`
+  - `clubShortName` = `'Harriers'`, `clubAbbreviation` = `'KID'`
+  - `focusTeamObjectId` = `'B96AD055-85E0-4380-921B-2821C895360F'`
+  - `ticketingUrl` = `'https://harriers.ktckts.com/'`
+  - `deepLinkUrl` = `'harriers.dynalinks.app'`
+  - `dynalinkPublicKey` = `'Zte7joPjjxFgUt7W8j2swVqc'`
+  - `dynalinkProjectId` = `'kidderminster-harriers'`
+  - `xFeedUrl` = `'https://rss.app/feeds/v1.1/ug3Ueshgo6RN4rL9.json'`
+  - `bgImageUrl` = `'https://harriers.co.uk/wp-content/uploads/04-2.jpg'`
+  - `settingsObjectId` = `'BBB686DF-D995-42C6-A0EA-AC4E3F50F9E0'`
+  - `backupTeamObjectIds` = list from `backupTeamIds`
+  - `badgeAssetPath` / `badgeOnPrimaryAssetPath` = CDN URLs from constants
+  - Component variants: keep all base-class defaults for now
+  - `touchlineAuthBaseUrl` = Touchline auth endpoint (set to stub URL if not yet live)
+
+### 6.4 — Add FixtureDetailScreen to feature_match_centre
+
+The Harriers `LGCFixture`, `LGCLive`, and `LGCResult` screens are the same composited screen — a single fixture shown with sections that appear/hide based on match state (`isLive`, `hasResult`).
+
+- [ ] Create `packages/feature_match_centre/lib/src/screens/fixture_detail_screen.dart`
+  - Accepts `matchObjectId: String` route parameter
+  - `ConsumerStatefulWidget`
+  - Fetches fixture via `getSpecificFixtureCall` (already in `api_client`)
+  - Sections rendered top-to-bottom: `TopBitWidget(variant: specific)` → `StatsWidget` → `LiveTextWidget` → `LineupsWidget` → `LeagueTableWidget(variant: mini)` → `PollsVotingWidget`
+  - Sections shown/hidden based on match state
+- [ ] Export from `packages/feature_match_centre/lib/feature_match_centre.dart`
+- [ ] `flutter analyze` in `packages/feature_match_centre` — zero errors
+
+### 6.5 — Port HomeScreen
+
+**Source:** `example_apps/harriers/lib/auth/pages/home/home_widget.dart`
+**Target:** `apps/harriers/lib/home/home_screen.dart`
+
+- [ ] Convert to `ConsumerStatefulWidget` (Riverpod)
+- [ ] Replace all `touchline_template_puum0i` imports with migrated package imports:
+  - `TopBitWidget` ← `package:feature_match_centre`
+  - `NextFixtureSlider` ← `package:feature_match_centre`
+  - `LeagueTableWidget` ← `package:feature_league`
+  - `SquadHubSlider` ← `package:feature_player`
+  - `PollsVotingWidget` ← `package:feature_predictor`
+  - `XFeedWidget` ← `package:feature_news`
+  - `CombinedCmsWidget` ← `package:feature_news`
+  - `SponsorAdCarousel`, `SocialIcons`, `AppCustomTabs` ← `package:core_ui`
+- [ ] Remove `initalRoute()` call — GoRouter redirect handles this (step 6.7)
+- [ ] Replace `setNavBarPadding()` with `navBarPadding(context)` from `package:core_ui`
+- [ ] Remove `startDynalinkListener()` — moved to `main.dart`
+- [ ] Replace `launchCampaigns()` with `campaignProvider` from `package:feature_events`
+- [ ] Preserve exact component layout and order from the source
+
+### 6.6 — Port NavbarWidget
+
+**Source:** `example_apps/harriers/lib/components/navbar_widget.dart`
+**Target:** `apps/harriers/lib/navigation/navbar_widget.dart`
+
+- [ ] Convert to `ConsumerStatefulWidget`
+- [ ] Keep 5-tab structure: Home · Games · [dynamic centre] · Shop · Tickets
+- [ ] Dynamic centre button: if `isWithinEventWindow()` → show live badge → navigate to `/fixture/:id`; otherwise navigate to My Club folder
+- [ ] Replace `FFAppState` access with appropriate Riverpod providers
+- [ ] Ticketing tab navigates to `TicketsScreen` (webview wrapping `appConfig.ticketingUrl`)
+
+### 6.7 — Build GoRouter
+
+**Target:** `apps/harriers/lib/navigation/router.dart`
+
+Auth redirect: `authNotifierProvider` state → `AuthUnauthenticated`/`AuthInitial` → `/sign-in`; `AuthAuthenticated`/`AuthGuest` → `/home`.
+
+All route paths must match exactly (deep-link safety):
+
+| Path | Screen | Package |
+|------|--------|---------|
+| `/sign-in` | `SignInScreen` | `feature_auth` |
+| `/create-account` | `CreateAccountScreen` | `feature_auth` |
+| `/forgot-password` | `ForgotPasswordScreen` | `feature_auth` |
+| `/home` | `HomeScreen` | `apps/harriers` |
+| `/games` | `GamesPageWidget` | `feature_match_centre` |
+| `/lGCFixture` | Redirect → `/fixture/:matchObjectId` | — |
+| `/lGCLive` | Redirect → `/fixture/:matchObjectId` | — |
+| `/lGCResult` | Redirect → `/fixture/:matchObjectId` | — |
+| `/fixture/:matchObjectId` | `FixtureDetailScreen` | `feature_match_centre` |
+| `/predictor` | `PredictorWidget` | `feature_predictor` |
+| `/predictor-league-table` | `PredictorHistoryWidget` | `feature_predictor` |
+| `/tickets` | `TicketsScreen` | `apps/harriers` |
+| `/merch-shop` | `ShopProductScreen` | `feature_shop` |
+| `/shop` | `ShopProductScreen` | `feature_shop` |
+| `/cart` | `CartScreen` | `feature_shop` |
+| `/league-table` | `LeagueTableWidget` | `feature_league` |
+| `/player-page` | `PlayerProfileScreen` | `feature_player` |
+| `/cms-post` | `CmsPostPage` | `feature_news` |
+| `/news-archive` | `WordpressNewsFeed` | `feature_news` |
+| `/event-page` | `TeamEventScreen` | `feature_events` |
+| `/play` | `InteractiveHubScreen` | `feature_events` |
+| `/teamEvent` | `TeamEventScreen` | `feature_events` |
+| `/teamSelect` | `YouthTeamSelectWidget` | `feature_events` |
+| `/youthSignUp` | `YouthSignUpScreen` | `feature_events` |
+| `/youthMainScreen` | `YouthMainScreen` | `feature_events` |
+| `/digitalProgrammeProductPageLIB` | `DigitalProgrammeScreen` | `feature_programmes` |
+| `/myProgrammesLIB` | `MyProgrammesScreen` | `feature_programmes` |
+| `/my-club-page`, `/my-club-folder` | Stub screen (Phase 6 stretch) | `apps/harriers` |
+
+### 6.8 — Create TicketsScreen
+
+- [ ] Create `apps/harriers/lib/screens/tickets_screen.dart`
+- [ ] `WebViewController` + `WebViewWidget` loading `ref.watch(appConfigProvider).ticketingUrl`
+- [ ] Same pattern as `PayForParkingWidget` in `feature_events`
+
+### 6.9 — Write main.dart
+
+**Target:** `apps/harriers/lib/main.dart`
+
+- [ ] `await Firebase.initializeApp()` (analytics, crashlytics, messaging, remote config — **not** user auth; that is handled inside `feature_auth`)
+  - Firebase credentials: copy `google-services.json` from `example_apps/harriers/android/app/` and `GoogleService-Info.plist` from `example_apps/harriers/ios/Runner/`
+- [ ] `Dynalink.initialize(publicKey: config.dynalinkPublicKey, projectId: config.dynalinkProjectId)` — start deep-link listener
+- [ ] `SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])` — portrait lock
+- [ ] `ProviderScope(overrides: [appConfigProvider.overrideWithValue(HarriersConfig())], child: ...)`
+- [ ] On app start: `ref.read(authNotifierProvider.notifier).restoreSession()`
+
+### 6.10 — Assets + pubspec
+
+- [ ] Copy Harriers assets from `example_apps/harriers/assets/` → `apps/harriers/assets/`:
+  - `images/Harriers_Logo_PNG_White.png`, `app_launcher_icon.png`, `adaptive_foreground_icon.png`
+  - `images/bg2.png`, `bg3-min.png`, `error_image.png`
+  - `jsons/live-white.json` (Lottie animation)
+  - `fonts/twitterFont.ttf`
+- [ ] Update `apps/harriers/pubspec.yaml`:
+  - Path deps: all used `packages/*`
+  - Add: `firebase_core`, `firebase_analytics`, `firebase_crashlytics`, `firebase_messaging`, `firebase_remote_config`, `webview_flutter`, `dynalink`
+  - Remove: `provider`, `touchline_template_puum0i`, `ff_commons`, `ff_theme`
+
+### 6.11 — Native platform config
+
+- [ ] Android: `android/app/build.gradle` — package `com.ulnk.kidderminsterharriersfanclub`
+- [ ] Android: copy `google-services.json` from `example_apps/harriers/`
+- [ ] Android: `AndroidManifest.xml` deep-link intent filters — scheme `kidderminsterharriers`, host `harriers.dynalinks.app`
+- [ ] iOS: `ios/Runner/Info.plist` — bundle ID, URL schemes, associated domains
+- [ ] iOS: copy `GoogleService-Info.plist` from `example_apps/harriers/`
+- [ ] App icons: copy from `example_apps/harriers/assets/images/`
+
+### 6.12 — Build + verify
+
+- [ ] `flutter build apk --debug` in `apps/harriers/` — must succeed
+- [ ] `flutter build ios --debug --no-codesign` in `apps/harriers/` — must succeed
+- [ ] `flutter analyze` across entire workspace — zero errors
 - [ ] Execute smoke tests (Section 8) against debug build
-- [ ] Run `flutter analyze` across entire workspace — zero errors
-- [ ] Commit: "feat(apps): assemble club_app_1 from migrated packages"
-
-### Route preservation
-
-All route paths from the current `createRouter()` must exist unchanged:
-- `/myProgrammesLIB`
-- `/teamSelect`
-- `/teamEvent`
-- `/cart`
-- `/interactiveHub`
-- `/youthSignUp`
-- `/shop`
-- `/youthMainScreen`
-- `/digitalProgramme/:matchObjectId`
+- [ ] Commit: `feat(apps): assemble harriers app from migrated packages`
 
 ---
 
@@ -844,24 +1025,47 @@ All route paths from the current `createRouter()` must exist unchanged:
 - [ ] Run `dart pub deps` — verify no transitive `provider` package remains
 - [ ] Run `flutter analyze` across workspace — zero errors, zero warnings
 - [ ] Run full smoke test suite
+- [ ] Archive or delete `example_apps/harriers/` — superseded by `apps/harriers/`
 - [ ] Commit: "chore: remove all FlutterFlow dependencies and legacy code"
 
 ---
 
-## Phase 8 — Additional Club Apps
+## Phase 8 — Club App Template + Additional Clubs
 
-**Goal:** Onboard each additional club app.
-**Estimated time per app with Claude Code: 1–3 hours**
+**Goal:** Create a reusable scaffold for new club apps, then onboard each additional club.
+**Estimated time: 2–3 hours for template; 1–3 hours per additional club**
 
-For each club app:
+### 8.0 — Create apps/_template/
 
-- [ ] Create `apps/club_app_N/` from `apps/_template/`
-- [ ] Implement `AppConfig` with club-specific values
-- [ ] Move club-specific assets to `apps/club_app_N/assets/`
-- [ ] Configure variant selections in `AppConfig`
-- [ ] Verify build succeeds
-- [ ] Smoke test critical flows
-- [ ] Commit: "feat(apps): add club_app_N"
+`apps/_template/` is the canonical starting point for every new club app. It must build cleanly and contain instructional comments at every customisation point.
+
+- [ ] Create `apps/_template/lib/app_config.dart` — `TemplateClubConfig extends AppConfig` with every required field set to `throw UnimplementedError('Set [fieldName] in your AppConfig')` and an explanatory comment
+- [ ] Create `apps/_template/lib/home/home_screen.dart` — minimal `ConsumerStatefulWidget` with one labelled slot per home section (TopBit, Fixtures, LeagueTable, News, etc.)
+- [ ] Create `apps/_template/lib/navigation/navbar_widget.dart` — standard 5-tab bottom nav (Home · Games · Club · Shop · Tickets)
+- [ ] Create `apps/_template/lib/navigation/router.dart` — complete route table (all paths from Section 6.7 wired)
+- [ ] Create `apps/_template/lib/screens/tickets_screen.dart` — webview wrapper
+- [ ] Create `apps/_template/lib/main.dart` — full bootstrap (Firebase init, Dynalink, portrait lock, ProviderScope)
+- [ ] Create `apps/_template/pubspec.yaml` — all package deps wired
+- [ ] Create `apps/_template/README.md` — "what to change" checklist for new clubs (see per-club checklist below)
+- [ ] `flutter build apk --debug` in `apps/_template/` — must succeed (proves template compiles)
+- [ ] Commit: `feat(apps): add club app template scaffold`
+
+### 8.1 — Per-club onboarding (repeat for each new club)
+
+For each new club (e.g. `apps/brackley/`):
+
+- [ ] Copy `apps/_template/` → `apps/[clubname]/`
+- [ ] Implement `[ClubName]Config extends AppConfig` — fill all required fields (API keys, club name, URLs, Dynalink keys, team IDs, theme)
+- [ ] Customise `HomeScreen` — decide which sections appear and in what order
+- [ ] Customise `NavbarWidget` — update tab icons, labels; add/remove tabs if needed
+- [ ] Set up Firebase project for this club → add `google-services.json` + `GoogleService-Info.plist`
+- [ ] Update Android native config: package name, app label, deep-link intent filters
+- [ ] Update iOS native config: bundle ID, URL schemes, associated domains
+- [ ] Add club assets: logo (colour + white), app icon, background image
+- [ ] Configure Dynalink project for this club's domain
+- [ ] `flutter build apk --debug` — must succeed
+- [ ] Smoke test critical flows (Section 8 checklist)
+- [ ] Commit: `feat(apps): add [clubname] app`
 
 ---
 
@@ -897,11 +1101,11 @@ workflows:
       - name: Bootstrap
         script: melos bootstrap
       - name: Build Android
-        script: cd apps/club_app_1 && flutter build apk --release
+        script: cd apps/harriers && flutter build apk --release
       - name: Build iOS
-        script: cd apps/club_app_1 && flutter build ios --release --no-codesign
+        script: cd apps/harriers && flutter build ios --release --no-codesign
     artifacts:
-      - apps/club_app_1/build/app/outputs/flutter-apk/*.apk
+      - apps/harriers/build/app/outputs/flutter-apk/*.apk
 
   pr-preview:
     name: PR — Preview Build (Firebase App Distribution)
@@ -909,7 +1113,7 @@ workflows:
       events: [pull_request]
     scripts:
       - melos bootstrap
-      - cd apps/club_app_1 && flutter build apk --debug
+      - cd apps/harriers && flutter build apk --debug
     # configure Firebase App Distribution artifact upload here
 ```
 
@@ -951,7 +1155,8 @@ Run these manually after Phase 6 and again after Phase 7.
 
 | Risk | Severity | Mitigation |
 |---|---|---|
-| `initalRoute()` auth branching regression | High | Port logic line-by-line; unit test all branches |
+| Touchline JWT exchange endpoint not yet live | High | Implement `AuthNotifier` with configurable stub/mock; flag in plan; unblock other Phase 6 work |
+| `initalRoute()` auth branching regression | High | Replace with GoRouter `redirect` using `authNotifierProvider` — unit test all state branches |
 | `FlutterSecureStorage` key rename breaks existing users | High | Never rename keys; test on device with existing session |
 | Multi-version widget visual regression | Medium | Screenshot each variant before migration; compare after |
 | GoRouter deep link paths change | Medium | Keep all route path strings identical |
@@ -973,11 +1178,11 @@ Run these manually after Phase 6 and again after Phase 7.
 | Phase 3 | Core UI package | 3–4 hours |
 | Phase 4 | Auth package | 3–5 hours |
 | Phase 5 | All feature packages | 1–2 days |
-| Phase 6 | App assembly | 3–5 hours |
+| Phase 6 | Assemble apps/harriers/ (incl. feature_auth Firebase rewrite) | 5–8 hours |
 | Phase 7 | Final cleanup | 1–2 hours |
-| Phase 8 | Additional club apps (each) | 1–3 hours |
+| Phase 8 | Club app template + additional clubs (template: 2–3 h; each club: 1–3 h) | 3–6 hours |
 | Phase 9 | CI/CD | 2–3 hours |
-| **Total** | **Single developer + Claude Code** | **~4–5 days** |
+| **Total** | **Single developer + Claude Code** | **~5–6 days** |
 
 ---
 
@@ -1038,6 +1243,6 @@ All of this logic must be preserved exactly when migrating to `AuthNotifier` / `
 
 ---
 
-*Last updated: 2026-02-24*
-*Plan version: 1.2*
+*Last updated: 2026-02-27*
+*Plan version: 1.3*
 *Changes from v1.1: Replace `abstract class AppConfig` with concrete base class; add feature sub-config objects (`ShopConfig`, `YouthConfig`, `ProgrammesConfig`); add schema evolution decision table (Section 5.4).*
