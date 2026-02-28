@@ -450,14 +450,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // ---- My Club (stub screens — Phase 6 stretch) ----
+      // ---- My Club (CMS static page tree) ----
       GoRoute(
-        path: '/my-club-page',
-        builder: (_, __) => const _StubScreen(title: 'My Club'),
+        path: StaticPageScreen.routePath,    // '/my-club-page'
+        builder: (_, state) => StaticPageScreen(
+          objectId: state.uri.queryParameters['objectId'] ?? '',
+        ),
       ),
       GoRoute(
-        path: '/my-club-folder',
-        builder: (_, __) => const _StubScreen(title: 'My Club'),
+        path: StaticPageFolderScreen.routePath,  // '/my-club-folder'
+        builder: (_, state) => StaticPageFolderScreen(
+          rootKey: state.uri.queryParameters['rootKey'] ?? 'root',
+        ),
       ),
     ],
   );
@@ -498,20 +502,3 @@ class _AuthStateListenable extends ChangeNotifier {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Stub placeholder for routes not yet implemented (Phase 6 stretch)
-// ---------------------------------------------------------------------------
-
-class _StubScreen extends StatelessWidget {
-  const _StubScreen({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: Center(child: Text('$title — coming soon')),
-    );
-  }
-}

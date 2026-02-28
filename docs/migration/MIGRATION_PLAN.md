@@ -967,7 +967,8 @@ All route paths must match exactly (deep-link safety):
 | `/youthMainScreen` | `YouthMainScreen` | `feature_events` |
 | `/digitalProgrammeProductPageLIB` | `DigitalProgrammeScreen` | `feature_programmes` |
 | `/myProgrammesLIB` | `MyProgrammesScreen` | `feature_programmes` |
-| `/my-club-page`, `/my-club-folder` | Stub screen (Phase 6 stretch) | `apps/harriers` |
+| `/my-club-page` | `StaticPageScreen` | `feature_news` |
+| `/my-club-folder` | `StaticPageFolderScreen` | `feature_news` |
 
 - Note: `ShellRoute` wraps `/home`, `/games`, `/merch-shop`, `/tickets` with `NavbarWidget` overlay
 - Note: `_AuthStateListenable extends ChangeNotifier` triggers router refresh on auth state changes
@@ -975,6 +976,7 @@ All route paths must match exactly (deep-link safety):
 - Note: Complex-object routes (`/teamSelect`, `/youthSignUp`, `/youthMainScreen`, `/event-page`) use GoRouter `extra` for passing structs
 - Note: `/checkout` route wraps `CheckoutWidget` in a `Scaffold`; `/teamSelect` wraps `YouthTeamSelectWidget` in a `Scaffold`
 - Note: `YouthMainScreen` takes no `userToken` param; `YouthTeamSelectWidget.subpage` is `int`, `team` is `TeamStruct` (not `TeamEventStruct`)
+- Note: `/my-club-page` → `StaticPageScreen` (single CMS page, objectId query param); `/my-club-folder` → `StaticPageFolderScreen` (CMS folder list, rootKey query param); both in `feature_news`. This is NOT account management — My Club is CMS-driven static fan content (club history, stadium info etc.) from the Backendless `InternalPages` table.
 
 ### 6.8 — Create TicketsScreen ✓
 

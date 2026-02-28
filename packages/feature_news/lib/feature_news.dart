@@ -14,3 +14,7 @@ export 'src/widgets/youtube_video_widget.dart';
 export 'src/widgets/cms_post_page.dart';
 export 'src/widgets/combined_cms_widget.dart';
 export 'src/widgets/events_slider_widget.dart';
+
+// My Club — CMS static page tree
+export 'src/screens/static_page_folder_screen.dart';
+export 'src/screens/static_page_screen.dart';
