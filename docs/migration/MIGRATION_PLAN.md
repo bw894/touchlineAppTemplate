@@ -899,21 +899,23 @@ The Harriers `LGCFixture`, `LGCLive`, and `LGCResult` screens are the same compo
 **Source:** `example_apps/harriers/lib/auth/pages/home/home_widget.dart`
 **Target:** `apps/harriers/lib/home/home_screen.dart`
 
-- [ ] Convert to `ConsumerStatefulWidget` (Riverpod)
-- [ ] Replace all `touchline_template_puum0i` imports with migrated package imports:
-  - `TopBitWidget` ← `package:feature_match_centre`
+- [x] Convert to `ConsumerWidget` (Riverpod — stateless is sufficient)
+- [x] Replace all `touchline_template_puum0i` imports with migrated package imports:
+  - `TopBitWidget` ← `package:core_ui` (via `feature_match_centre`)
   - `NextFixtureSlider` ← `package:feature_match_centre`
   - `LeagueTableWidget` ← `package:feature_league`
   - `SquadHubSlider` ← `package:feature_player`
-  - `PollsVotingWidget` ← `package:feature_predictor`
+  - `PollsVotingWidget` ← `package:feature_predictor` (shown via dialog)
   - `XFeedWidget` ← `package:feature_news`
   - `CombinedCmsWidget` ← `package:feature_news`
-  - `SponsorAdCarousel`, `SocialIcons`, `AppCustomTabs` ← `package:core_ui`
-- [ ] Remove `initalRoute()` call — GoRouter redirect handles this (step 6.7)
-- [ ] Replace `setNavBarPadding()` with `navBarPadding(context)` from `package:core_ui`
-- [ ] Remove `startDynalinkListener()` — moved to `main.dart`
-- [ ] Replace `launchCampaigns()` with `campaignProvider` from `package:feature_events`
-- [ ] Preserve exact component layout and order from the source
+  - `SponsorAdWidget`, `SocialIconsBar`, `TitleWidget` ← `package:core_ui`
+- [x] `initalRoute()` call removed — GoRouter redirect handles auth flow
+- [x] `setNavBarPadding()` → `navBarPadding(context)` from `package:core_ui` (SizedBox at column end)
+- [x] `startDynalinkListener()` removed — moved to `main.dart` (Phase 6.9)
+- [x] `launchCampaigns()` removed — `campaignProvider` wired in Phase 6.9
+- [x] Section layout and order preserved exactly
+- Note: `VoteNonFixtureV1Widget` (non-fixture poll cards list) ported inline as `_PollsSection`; polls shown only when `_activePollsProvider` returns non-empty list
+- Note: User avatar overlay navigates to `/my-club-page`; shows `badgeOnPrimaryAssetPath` as fallback (UserStruct has no photoUrl field)
 
 ### 6.6 — Port NavbarWidget
 
