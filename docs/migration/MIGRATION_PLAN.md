@@ -922,11 +922,13 @@ The Harriers `LGCFixture`, `LGCLive`, and `LGCResult` screens are the same compo
 **Source:** `example_apps/harriers/lib/components/navbar_widget.dart`
 **Target:** `apps/harriers/lib/navigation/navbar_widget.dart`
 
-- [ ] Convert to `ConsumerStatefulWidget`
-- [ ] Keep 5-tab structure: Home · Games · [dynamic centre] · Shop · Tickets
-- [ ] Dynamic centre button: if `isWithinEventWindow()` → show live badge → navigate to `/fixture/:id`; otherwise navigate to My Club folder
-- [ ] Replace `FFAppState` access with appropriate Riverpod providers
-- [ ] Ticketing tab navigates to `TicketsScreen` (webview wrapping `appConfig.ticketingUrl`)
+- [x] Converted to `ConsumerWidget` (stateless sufficient)
+- [x] 5-tab structure: Home · Games · [dynamic centre] · Shop · Tickets
+- [x] Dynamic centre button: `_liveCentreProvider` fetches `upcomingOneFixturesStartEndCall`; `_isWithinEventWindow()` (3-hour buffer, ported inline) → live Lottie badge + navigate to `/fixture/:id`; otherwise → app icon + navigate to `/my-club-folder`
+- [x] `FFAppState` access removed — `appConfigProvider` (Riverpod) for API keys; `GoRouterState.of(context).uri.path` for active-tab highlight
+- [x] Ticketing tab navigates to `/tickets` (TicketsScreen wraps webview, Phase 6.8)
+- Note: `FlutterFlowIconButton` replaced with `_TabButton` StatelessWidget (50×50 IconButton)
+- Note: `flutter_spinkit: 5.2.0`, `lottie: 3.1.2`, `font_awesome_flutter: 10.7.0` added to `apps/harriers/pubspec.yaml`; `assets/jsons/` asset path added
 
 ### 6.7 — Build GoRouter
 
