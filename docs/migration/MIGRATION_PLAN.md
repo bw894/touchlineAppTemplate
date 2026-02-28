@@ -858,12 +858,12 @@ Auth flow:
 
 ### 6.3 — Implement HarriersConfig
 
-- [ ] Create `apps/harriers/lib/app_config.dart` — `HarriersConfig extends AppConfig`
-- [ ] Source values from `example_apps/harriers/lib/app_constants.dart`:
-  - `projectId` = `BLProjectId`
-  - `restApiKey` = `BLRestAPIKey`
+- [x] Create `apps/harriers/lib/app_config.dart` — `HarriersConfig extends AppConfig`
+- [x] Source values from `example_apps/harriers/lib/app_constants.dart`:
+  - `projectId` = `'6D654B32-2E5D-4E11-98F9-BACF8B9930B5'`
+  - `restApiKey` = `'C7DEECF4-82EB-4F42-86BD-49ACA7E19114'`
   - `clubFullName` = `'Kidderminster Harriers'`
-  - `clubShortName` = `'Harriers'`, `clubAbbreviation` = `'KID'`
+  - `clubShortName` = `'Harriers'`, `clubAbbreviation` = `'KID'`, `nicknamePlural` = `'Harriers'`
   - `focusTeamObjectId` = `'B96AD055-85E0-4380-921B-2821C895360F'`
   - `ticketingUrl` = `'https://harriers.ktckts.com/'`
   - `deepLinkUrl` = `'harriers.dynalinks.app'`
@@ -872,10 +872,13 @@ Auth flow:
   - `xFeedUrl` = `'https://rss.app/feeds/v1.1/ug3Ueshgo6RN4rL9.json'`
   - `bgImageUrl` = `'https://harriers.co.uk/wp-content/uploads/04-2.jpg'`
   - `settingsObjectId` = `'BBB686DF-D995-42C6-A0EA-AC4E3F50F9E0'`
-  - `backupTeamObjectIds` = list from `backupTeamIds`
-  - `badgeAssetPath` / `badgeOnPrimaryAssetPath` = CDN URLs from constants
-  - Component variants: keep all base-class defaults for now
-  - `touchlineAuthBaseUrl` = Touchline auth endpoint (set to stub URL if not yet live)
+  - `backupTeamObjectIds` = `['B96AD055-85E0-4380-921B-2821C895360F']`
+  - `badgeAssetPath` = Wikipedia colored badge CDN URL
+  - `badgeOnPrimaryAssetPath` = Touchline API white logo CDN URL
+  - Component variants: all base-class defaults (no overrides needed for now)
+  - `touchlineAuthBaseUrl` = `'https://auth.touchlineclub.com'` (update when endpoint is live)
+  - Theme: full `ClubThemeConfig` — primary `0xFFEB2D2E`, fontFamily `Montserrat`
+- [x] Auth screens updated to use `badgeOnPrimaryAssetPath` + URL/asset path helper (`_badgeImage`)
 
 ### 6.4 — Add FixtureDetailScreen to feature_match_centre
 

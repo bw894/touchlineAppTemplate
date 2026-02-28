@@ -107,7 +107,7 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
             padding: const EdgeInsets.all(12),
             child: ClipRRect(
               borderRadius: BorderRadius.zero,
-              child: Image.asset(cfg.badgeAssetPath, fit: BoxFit.contain),
+              child: _badgeImage(cfg.badgeOnPrimaryAssetPath),
             ),
           ),
           Padding(
@@ -293,6 +293,14 @@ class _CreateAccountScreenState extends ConsumerState<CreateAccountScreen> {
         ],
       ),
     );
+  }
+
+  /// Renders a badge from either a HTTPS URL or a local asset path.
+  Widget _badgeImage(String path) {
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return Image.network(path, fit: BoxFit.contain);
+    }
+    return Image.asset(path, fit: BoxFit.contain);
   }
 
   Widget _buildTextField({
