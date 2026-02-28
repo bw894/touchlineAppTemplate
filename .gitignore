@@ -1,0 +1,54 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+*.g.dart
+*.freezed.dart
+
+# Package lock files — commit in apps, not in packages
+# apps/*/pubspec.lock  ← committed (pin app dependencies)
+packages/*/pubspec.lock
+packages/**/pubspec.lock
+
+# Generated files
+*.iml
+*.ipr
+*.iws
+.idea/
+.DS_Store
+Thumbs.db
+
+# Android
+android/.gradle
+android/local.properties
+android/app/google-services.json
+android/key.properties
+*.keystore
+*.jks
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+*.xcworkspace
+!default.xcworkspace
+Podfile.lock
+
+# Web
+web/
+
+# Test coverage
+coverage/
+*.lcov
+
+# Environment
+.env
+*.env.local

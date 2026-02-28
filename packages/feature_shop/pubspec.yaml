@@ -1,0 +1,46 @@
+name: feature_shop
+description: Touchline shop — product pages, cart, checkout, and order management.
+publish_to: 'none'
+version: 0.0.1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Internal
+  api_client:
+    path: ../api_client
+  core_ui:
+    path: ../core_ui
+  theming:
+    path: ../theming
+
+  # State
+  flutter_riverpod: ^2.6.1
+
+  # Persistence
+  csv: 6.0.0
+  flutter_secure_storage: 10.0.0-beta.4
+
+  # Media
+  cached_network_image: 3.4.1
+  image_picker: 1.1.2
+
+  # Spinners / icons
+  flutter_spinkit: 5.2.0
+
+  # UI components
+  expandable: 5.0.1
+  smooth_page_indicator: ^2.0.0
+
+  # Utils
+  collection: 1.19.1
+  intl: any
+
+dev_dependencies:
+  flutter_lints: 4.0.0
+  flutter_test:
+    sdk: flutter
