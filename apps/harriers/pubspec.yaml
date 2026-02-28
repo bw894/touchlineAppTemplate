@@ -49,6 +49,19 @@ dependencies:
   lottie: 3.1.2
   font_awesome_flutter: 10.7.0
 
+  # WebView (TicketsScreen)
+  webview_flutter: 4.13.0
+
+  # Firebase
+  firebase_core: 3.14.0
+  firebase_analytics: 11.5.0
+  firebase_crashlytics: 4.3.7
+  firebase_messaging: 15.2.7
+  firebase_remote_config: 5.4.5
+
+  # Deep links
+  dynalink_flutter: 0.0.11
+
   # Splash screen
   flutter_native_splash: 2.4.1
 
@@ -76,12 +89,11 @@ flutter:
     - assets/jsons/
 
   fonts:
-    - family: IcomoonBuck1
-      fonts:
-        - asset: assets/fonts/icomoon-buck1.ttf
     - family: TwitterFont
       fonts:
         - asset: assets/fonts/twitterFont.ttf
-    - family: Icomoon
+    - family: Montserrat
       fonts:
-        - asset: assets/fonts/icomoon.ttf
+        - asset: assets/fonts/Montserrat-Regular.ttf
+        - asset: assets/fonts/Montserrat-SemiBold.ttf
+          weight: 600
