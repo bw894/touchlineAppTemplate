@@ -1066,15 +1066,15 @@ All route paths must match exactly (deep-link safety):
 
 `apps/_template/` is the canonical starting point for every new club app. It must build cleanly and contain instructional comments at every customisation point.
 
-- [ ] Create `apps/_template/lib/app_config.dart` — `TemplateClubConfig extends AppConfig` with every required field set to `throw UnimplementedError('Set [fieldName] in your AppConfig')` and an explanatory comment
-- [ ] Create `apps/_template/lib/home/home_screen.dart` — minimal `ConsumerStatefulWidget` with one labelled slot per home section (TopBit, Fixtures, LeagueTable, News, etc.)
-- [ ] Create `apps/_template/lib/navigation/navbar_widget.dart` — standard 5-tab bottom nav (Home · Games · Club · Shop · Tickets)
-- [ ] Create `apps/_template/lib/navigation/router.dart` — complete route table (all paths from Section 6.7 wired)
-- [ ] Create `apps/_template/lib/screens/tickets_screen.dart` — webview wrapper
-- [ ] Create `apps/_template/lib/main.dart` — full bootstrap (Firebase init, Dynalink, portrait lock, ProviderScope)
-- [ ] Create `apps/_template/pubspec.yaml` — all package deps wired
-- [ ] Create `apps/_template/README.md` — "what to change" checklist for new clubs (see per-club checklist below)
-- [ ] `flutter build apk --debug` in `apps/_template/` — must succeed (proves template compiles)
+- [x] Create `apps/_template/lib/app_config.dart` — `TemplateClubConfig extends AppConfig` with every required field set to `throw UnimplementedError('Set [fieldName] in your AppConfig')` and an explanatory comment
+- [x] Create `apps/_template/lib/home/home_screen.dart` — `ConsumerWidget` with one labelled slot per home section (TopBit, Fixtures, LeagueTable, News, etc.)
+- [x] Create `apps/_template/lib/navigation/navbar_widget.dart` — standard 5-tab bottom nav (Home · Games · Club · Shop · Tickets)
+- [x] Create `apps/_template/lib/navigation/router.dart` — complete route table (all paths from Section 6.7 wired)
+- [x] Create `apps/_template/lib/screens/tickets_screen.dart` — webview wrapper
+- [x] Create `apps/_template/lib/main.dart` — full bootstrap (Firebase init, Dynalink, portrait lock, ProviderScope)
+- [x] Create `apps/_template/pubspec.yaml` — all package deps wired (Firebase, dynalink_flutter, webview_flutter, lottie, font_awesome, flutter_spinkit)
+- [x] Create `apps/_template/README.md` — 14-step per-club onboarding checklist
+- [ ] `flutter build apk --debug` in `apps/_template/` — must succeed (requires Android SDK — user action)
 - [ ] Commit: `feat(apps): add club app template scaffold`
 
 ### 8.1 — Per-club onboarding (repeat for each new club)
