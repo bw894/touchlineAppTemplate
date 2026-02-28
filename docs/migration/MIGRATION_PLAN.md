@@ -826,7 +826,7 @@ Add these fields to `packages/core_ui/lib/src/config/app_config.dart` (all requi
 - `String get dynalinkProjectId` — Dynalink project ID (matches deep-link subdomain)
 - `List<String> get backupTeamObjectIds` — Fallback team IDs for fixture queries
 - `String get settingsObjectId` — Backendless settings record ID
-- `String get touchlineAuthBaseUrl` — Base URL for Touchline JWT exchange (e.g. `https://auth.touchlineclub.com`)
+- `String get touchlineAuthBaseUrl` — Base URL for Touchline JWT exchange (e.g. `https://api.touchlineclub.com/users/`)
 
 - [x] Add fields, run `flutter analyze` in `packages/core_ui` — must pass
 
@@ -841,17 +841,19 @@ Auth flow:
 4. Store JWT in `FlutterSecureStorage` under key `ff_userToken` (preserved)
 5. `userTokenProvider` continues returning `ff_userToken` value — all API callers unchanged
 
-- [ ] Add to `feature_auth/pubspec.yaml`: `firebase_auth`, `google_sign_in`, `sign_in_with_apple`
-- [ ] Rewrite `AuthNotifier`:
+- [x] Add to `feature_auth/pubspec.yaml`: `firebase_auth`, `google_sign_in`, `sign_in_with_apple`
+- [x] Rewrite `AuthNotifier`:
   - `signIn(email, password)` → Firebase email/password → exchange → store JWT
   - `signInWithGoogle()` → GoogleSignIn → Firebase credential → exchange → store JWT
   - `signInWithApple()` → Apple credential → Firebase credential → exchange → store JWT
   - `restoreSession()` → read `ff_userToken` → verify JWT valid (or re-exchange via stored Firebase user)
   - `signOut()` → `FirebaseAuth.instance.signOut()` + clear secure storage
-- [ ] `AuthAuthenticated` state carries the JWT string (used by `userTokenProvider`)
-- [ ] Update sign-in/create-account screens to call the new Firebase-backed methods
-- [ ] `firebase_core` init is in each club app's `main.dart` — `feature_auth` assumes it is already initialised
-- [ ] **Dependency note:** Touchline JWT exchange endpoint must be live for auth smoke tests to pass. If not yet available, implement with a configurable stub/mock and flag in notes.
+- [x] `AuthAuthenticated` state carries the JWT string (used by `userTokenProvider`)
+- [x] Update sign-in/create-account screens to call the new Firebase-backed methods
+  - Created `SignInScreen`, `CreateAccountScreen`, `ForgotPasswordScreen` in `feature_auth/src/screens/`
+  - Route paths: `/sign-in`, `/create-account`, `/forgot-password`
+- [x] `firebase_core` init is in each club app's `main.dart` — `feature_auth` assumes it is already initialised
+- [x] **Dependency note:** Touchline JWT exchange endpoint must be live for auth smoke tests to pass. If not yet available, implement with a configurable stub/mock and flag in notes.
 - [ ] `flutter analyze` in `packages/feature_auth` — zero errors
 
 ### 6.3 — Implement HarriersConfig
