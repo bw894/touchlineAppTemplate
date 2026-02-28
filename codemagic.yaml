@@ -1,0 +1,163 @@
+# Codemagic CI/CD — Touchline monorepo
+#
+# Workflows:
+#   pr-checks         Pull-request lint + test (all packages, no build)
+#   harriers-release  Push to `flutterflow` → release APK + IPA for Harriers
+#   pr-preview        Pull-request debug APK (Firebase App Distribution)
+#
+# Environment variables required in Codemagic UI → Environment variables:
+#
+#   ANDROID signing (harriers-release):
+#     CM_KEYSTORE          Base64-encoded .jks keystore file
+#     CM_KEYSTORE_PASSWORD Keystore password
+#     CM_KEY_ALIAS         Key alias
+#     CM_KEY_PASSWORD      Key password
+#
+#   iOS signing (harriers-release):
+#     Configure via Codemagic UI → Code signing → iOS certificates & profiles
+#     or export APP_STORE_CONNECT_ISSUER_ID / APP_STORE_CONNECT_KEY_IDENTIFIER /
+#     APP_STORE_CONNECT_PRIVATE_KEY as secrets.
+#
+#   Firebase App Distribution (pr-preview):
+#     FIREBASE_TOKEN        Firebase CLI token (`firebase login:ci`)
+#     FIREBASE_APP_ID_ANDROID  Android app ID from Firebase console
+#     FIREBASE_TESTERS         Comma-separated tester emails (optional)
+
+definitions:
+  # Reusable melos bootstrap step
+  bootstrap: &bootstrap
+    name: Bootstrap melos workspace
+    script: |
+      dart pub global activate melos
+      melos bootstrap
+
+  # Flutter version used across all workflows
+  flutter: &flutter
+    flutter: stable
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Workflow 1 — PR checks (lint + test, no build)
+# ─────────────────────────────────────────────────────────────────────────────
+workflows:
+  pr-checks:
+    name: PR — Lint + Test
+    instance_type: mac_mini_m2
+    environment:
+      <<: *flutter
+    triggering:
+      events:
+        - pull_request
+    scripts:
+      - *bootstrap
+      - name: Lint (dart analyze --fatal-infos)
+        script: melos run lint
+      - name: Test
+        script: melos run test
+    publishing:
+      # Report results back to the GitHub PR
+      github:
+        notify:
+          success: true
+          failure: true
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Workflow 2 — Harriers release build (push to flutterflow branch)
+# ─────────────────────────────────────────────────────────────────────────────
+
+  harriers-release:
+    name: Harriers — Release Build
+    instance_type: mac_mini_m2
+    environment:
+      <<: *flutter
+      android_signing:
+        - harriers_keystore    # Configure in Codemagic UI → Code signing → Android
+      ios_signing:
+        distribution_type: app_store   # or ad_hoc for TestFlight beta
+        bundle_identifier: com.ulnk.kidderminsterharriersfanclub
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: 'flutterflow'
+          include: true
+          source: true
+    scripts:
+      - *bootstrap
+      - name: Get dependencies (harriers)
+        script: cd apps/harriers && flutter pub get
+      - name: Build Android (release APK)
+        script: |
+          cd apps/harriers
+          flutter build apk --release \
+            --build-name="$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d+ -f1)" \
+            --build-number=$BUILD_NUMBER
+      - name: Build iOS (release)
+        script: |
+          cd apps/harriers
+          flutter build ios --release --no-codesign
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/Runner.xcarchive \
+            archive
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportOptionsPlist ios/ExportOptions.plist \
+            -exportPath build/Runner.ipa
+    artifacts:
+      - apps/harriers/build/app/outputs/flutter-apk/*.apk
+      - apps/harriers/build/Runner.ipa/*.ipa
+    publishing:
+      app_store_connect:
+        # Uncomment when App Store Connect API keys are configured:
+        # api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        # key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        # issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: false   # set true when ready
+      google_play:
+        # Uncomment when Google Play service account JSON is configured:
+        # credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal              # internal → alpha → production
+        submit_as_draft: true
+      email:
+        recipients:
+          - builds@touchlineclub.com   # TODO: update to real address
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Workflow 3 — PR preview (debug APK → Firebase App Distribution)
+# ─────────────────────────────────────────────────────────────────────────────
+
+  pr-preview:
+    name: PR — Preview APK (Firebase App Distribution)
+    instance_type: mac_mini_m2
+    environment:
+      <<: *flutter
+    triggering:
+      events:
+        - pull_request
+    scripts:
+      - *bootstrap
+      - name: Get dependencies (harriers)
+        script: cd apps/harriers && flutter pub get
+      - name: Build debug APK
+        script: |
+          cd apps/harriers
+          flutter build apk --debug
+      - name: Distribute via Firebase App Distribution
+        script: |
+          # Requires FIREBASE_TOKEN and FIREBASE_APP_ID_ANDROID env vars
+          # Install Firebase CLI if not present
+          npm install -g firebase-tools 2>/dev/null || true
+          firebase appdistribution:distribute \
+            apps/harriers/build/app/outputs/flutter-apk/app-debug.apk \
+            --app "$FIREBASE_APP_ID_ANDROID" \
+            --token "$FIREBASE_TOKEN" \
+            --groups "testers" \
+            --release-notes "PR #$CM_PULL_REQUEST_NUMBER — $CM_COMMIT"
+    artifacts:
+      - apps/harriers/build/app/outputs/flutter-apk/app-debug.apk
+    publishing:
+      github:
+        notify:
+          success: true
+          failure: true

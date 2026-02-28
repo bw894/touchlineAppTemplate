@@ -1100,53 +1100,14 @@ For each new club (e.g. `apps/brackley/`):
 
 **Estimated time with Claude Code: 2–3 hours**
 
-- [ ] Create `codemagic.yaml` at repo root:
-
-```yaml
-workflows:
-  pr-checks:
-    name: PR — Lint + Test
-    triggering:
-      events: [pull_request]
-    scripts:
-      - name: Install melos
-        script: dart pub global activate melos
-      - name: Bootstrap
-        script: melos bootstrap
-      - name: Lint
-        script: melos run lint
-      - name: Test
-        script: melos run test
-
-  club-app-1-build:
-    name: Club App 1 — Release Build
-    triggering:
-      events: [push]
-      branch_patterns:
-        - { pattern: 'main', include: true }
-    scripts:
-      - name: Bootstrap
-        script: melos bootstrap
-      - name: Build Android
-        script: cd apps/harriers && flutter build apk --release
-      - name: Build iOS
-        script: cd apps/harriers && flutter build ios --release --no-codesign
-    artifacts:
-      - apps/harriers/build/app/outputs/flutter-apk/*.apk
-
-  pr-preview:
-    name: PR — Preview Build (Firebase App Distribution)
-    triggering:
-      events: [pull_request]
-    scripts:
-      - melos bootstrap
-      - cd apps/harriers && flutter build apk --debug
-    # configure Firebase App Distribution artifact upload here
-```
-
-- [ ] `codemagic.yaml` committed and first build triggered
-- [ ] PR preview build confirmed working
-- [ ] Commit: "ci: add Codemagic workflow for lint, test, build and PR preview"
+- [x] Create `codemagic.yaml` at repo root — three workflows:
+  - `pr-checks` — lint + test on every PR (all packages via melos)
+  - `harriers-release` — release APK + IPA on push to `flutterflow`; configured for Google Play internal track + TestFlight
+  - `pr-preview` — debug APK → Firebase App Distribution on PR
+  - Comments in file list all required Codemagic environment variable names for signing
+- [ ] Connect repo to Codemagic, configure signing credentials, trigger first build — **user action**
+- [ ] PR preview build confirmed working — **user action**
+- [x] Commit: "ci: add Codemagic workflow for lint, test, build and PR preview"
 
 ---
 
