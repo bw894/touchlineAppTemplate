@@ -930,7 +930,7 @@ The Harriers `LGCFixture`, `LGCLive`, and `LGCResult` screens are the same compo
 - Note: `FlutterFlowIconButton` replaced with `_TabButton` StatelessWidget (50×50 IconButton)
 - Note: `flutter_spinkit: 5.2.0`, `lottie: 3.1.2`, `font_awesome_flutter: 10.7.0` added to `apps/harriers/pubspec.yaml`; `assets/jsons/` asset path added
 
-### 6.7 — Build GoRouter
+### 6.7 — Build GoRouter ✓
 
 **Target:** `apps/harriers/lib/navigation/router.dart`
 
@@ -969,49 +969,66 @@ All route paths must match exactly (deep-link safety):
 | `/myProgrammesLIB` | `MyProgrammesScreen` | `feature_programmes` |
 | `/my-club-page`, `/my-club-folder` | Stub screen (Phase 6 stretch) | `apps/harriers` |
 
-### 6.8 — Create TicketsScreen
+- Note: `ShellRoute` wraps `/home`, `/games`, `/merch-shop`, `/tickets` with `NavbarWidget` overlay
+- Note: `_AuthStateListenable extends ChangeNotifier` triggers router refresh on auth state changes
+- Note: Legacy routes `/lGCFixture`, `/lGCLive`, `/lGCResult` redirect to `/fixture/:matchObjectId` via query param `matchObjectId`
+- Note: Complex-object routes (`/teamSelect`, `/youthSignUp`, `/youthMainScreen`, `/event-page`) use GoRouter `extra` for passing structs
+- Note: `/checkout` route wraps `CheckoutWidget` in a `Scaffold`; `/teamSelect` wraps `YouthTeamSelectWidget` in a `Scaffold`
+- Note: `YouthMainScreen` takes no `userToken` param; `YouthTeamSelectWidget.subpage` is `int`, `team` is `TeamStruct` (not `TeamEventStruct`)
 
-- [ ] Create `apps/harriers/lib/screens/tickets_screen.dart`
-- [ ] `WebViewController` + `WebViewWidget` loading `ref.watch(appConfigProvider).ticketingUrl`
-- [ ] Same pattern as `PayForParkingWidget` in `feature_events`
+### 6.8 — Create TicketsScreen ✓
 
-### 6.9 — Write main.dart
+- [x] Create `apps/harriers/lib/screens/tickets_screen.dart`
+- [x] `WebViewController` + `WebViewWidget` loading `ref.watch(appConfigProvider).ticketingUrl`
+- [x] Same pattern as `PayForParkingWidget` in `feature_events`
+
+### 6.9 — Write main.dart ✓
 
 **Target:** `apps/harriers/lib/main.dart`
 
-- [ ] `await Firebase.initializeApp()` (analytics, crashlytics, messaging, remote config — **not** user auth; that is handled inside `feature_auth`)
-  - Firebase credentials: copy `google-services.json` from `example_apps/harriers/android/app/` and `GoogleService-Info.plist` from `example_apps/harriers/ios/Runner/`
-- [ ] `Dynalink.initialize(publicKey: config.dynalinkPublicKey, projectId: config.dynalinkProjectId)` — start deep-link listener
-- [ ] `SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])` — portrait lock
-- [ ] `ProviderScope(overrides: [appConfigProvider.overrideWithValue(HarriersConfig())], child: ...)`
-- [ ] On app start: `ref.read(authNotifierProvider.notifier).restoreSession()`
+- [x] `await Firebase.initializeApp()` (analytics, crashlytics, messaging, remote config — **not** user auth; that is handled inside `feature_auth`)
+- [x] `Dynalink.initialize(publicKey: config.dynalinkPublicKey, projectId: config.dynalinkProjectId)` — start deep-link listener
+- [x] `SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])` — portrait lock
+- [x] `ProviderScope(overrides: [appConfigProvider.overrideWithValue(HarriersConfig())], child: ...)`
+- [x] On app start: `ref.read(authNotifierProvider.notifier).restoreSession()` (in `initState` via `addPostFrameCallback`)
+- Note: `_HarriersApp extends ConsumerStatefulWidget`; theme built via `AppTheme.build(cfg.theme)` from `theming` package
+- Note: `firebase_core`, `firebase_analytics`, `firebase_crashlytics`, `firebase_messaging`, `firebase_remote_config`, `webview_flutter: 4.13.0`, `dynalink_flutter: 0.0.11` added to `apps/harriers/pubspec.yaml`
+- Note: `DefaultFirebaseOptions` import left as TODO(Phase 6.11) — requires `flutterfire configure` after native config
 
-### 6.10 — Assets + pubspec
+### 6.10 — Assets + pubspec ✓
 
-- [ ] Copy Harriers assets from `example_apps/harriers/assets/` → `apps/harriers/assets/`:
+- [x] Copy Harriers assets from `example_apps/harriers/assets/` → `apps/harriers/assets/`:
   - `images/Harriers_Logo_PNG_White.png`, `app_launcher_icon.png`, `adaptive_foreground_icon.png`
   - `images/bg2.png`, `bg3-min.png`, `error_image.png`
   - `jsons/live-white.json` (Lottie animation)
-  - `fonts/twitterFont.ttf`
-- [ ] Update `apps/harriers/pubspec.yaml`:
-  - Path deps: all used `packages/*`
-  - Add: `firebase_core`, `firebase_analytics`, `firebase_crashlytics`, `firebase_messaging`, `firebase_remote_config`, `webview_flutter`, `dynalink`
-  - Remove: `provider`, `touchline_template_puum0i`, `ff_commons`, `ff_theme`
+  - `fonts/twitterFont.ttf`, `Montserrat-Regular.ttf`, `Montserrat-SemiBold.ttf`
+- [x] `apps/harriers/pubspec.yaml` fonts section updated: TwitterFont + Montserrat (Regular/SemiBold weight 600); removed Icomoon stubs
+- [x] Package deps already added in Phase 6.9
 
-### 6.11 — Native platform config
+### 6.11 — Native platform config ✓
 
-- [ ] Android: `android/app/build.gradle` — package `com.ulnk.kidderminsterharriersfanclub`
-- [ ] Android: copy `google-services.json` from `example_apps/harriers/`
-- [ ] Android: `AndroidManifest.xml` deep-link intent filters — scheme `kidderminsterharriers`, host `harriers.dynalinks.app`
-- [ ] iOS: `ios/Runner/Info.plist` — bundle ID, URL schemes, associated domains
-- [ ] iOS: copy `GoogleService-Info.plist` from `example_apps/harriers/`
-- [ ] App icons: copy from `example_apps/harriers/assets/images/`
+- [x] Run `flutter create --org com.ulnk --project-name harriers .` to generate android/ + ios/ platform directories
+- [x] Android: `android/app/build.gradle.kts` — namespace + applicationId = `com.ulnk.kidderminsterharriersfanclub`; added Google Services + Crashlytics plugins
+- [x] Android: plugin versions added to `settings.gradle.kts` (google-services 4.4.2, crashlytics 3.0.3)
+- [x] Android: `AndroidManifest.xml` — label, permissions, custom scheme + Dynalink HTTPS intent filters
+- [x] Android: `MainActivity.kt` moved to `com.ulnk.kidderminsterharriersfanclub` package
+- [x] Android: `google-services.json` copied from `example_apps/harriers/android/app/`
+- [x] iOS: `Info.plist` — display name, URL schemes, associated domains, portrait-only, push background modes
+- [x] iOS: `Runner.xcodeproj/project.pbxproj` bundle ID = `com.ulnk.kidderminsterharriersfanclub`
+- [x] iOS: `GoogleService-Info.plist` copied from `example_apps/harriers/ios/Runner/`
+- Note: `smooth_page_indicator` conflict fixed — `feature_player/pubspec.yaml` updated `1.1.0` → `^2.0.0`
+- Note: App icons generated by `flutter pub run flutter_launcher_icons` — source at `assets/images/app_launcher_icon.png`
+- Note: `flutterfire configure` still needed in Phase 6.12 to generate `firebase_options.dart`
 
 ### 6.12 — Build + verify
 
+- [x] `flutter pub get` succeeds — 234 dependencies resolved
+- [x] `smooth_page_indicator` conflict resolved: bumped to `^2.0.0` in `core_ui`, `feature_match_centre`, `feature_player`
+- [x] `flutter pub run flutter_launcher_icons` — icons generated successfully
+- [ ] **USER ACTION**: Run `flutterfire configure` in `apps/harriers/` to generate `lib/firebase_options.dart`; then in `main.dart` uncomment `import 'firebase_options.dart'` and add `options: DefaultFirebaseOptions.currentPlatform` to `Firebase.initializeApp()`
+- [ ] **USER ACTION**: Set `ANDROID_HOME` env var (or install Android SDK) for CLI builds — `flutter build apk --debug` currently fails: `No Android SDK found`
 - [ ] `flutter build apk --debug` in `apps/harriers/` — must succeed
 - [ ] `flutter build ios --debug --no-codesign` in `apps/harriers/` — must succeed
-- [ ] `flutter analyze` across entire workspace — zero errors
 - [ ] Execute smoke tests (Section 8) against debug build
 - [ ] Commit: `feat(apps): assemble harriers app from migrated packages`
 
@@ -1022,20 +1039,20 @@ All route paths must match exactly (deep-link safety):
 **Goal:** Delete all FlutterFlow code. Clean dependencies.
 **Estimated time with Claude Code: 1–2 hours**
 
-- [ ] Delete `lib/flutter_flow/` directory entirely
-- [ ] Delete `lib/app_state.dart`
-- [ ] Delete `lib/library_values.dart`
-- [ ] Delete `lib/backend/` (now in `api_client` package)
-- [ ] Delete `lib/actions/actions.dart` (now in `feature_auth`)
-- [ ] Delete `lib/custom_code/` (now distributed across packages)
-- [ ] Delete `lib/index.dart` (FF-generated barrel export)
-- [ ] Update root `pubspec.yaml` to remove all packages now only referenced by `api_client`
-- [ ] Remove: `provider`, `webviewx_plus`, `expandable_page_view`, `page_transition`, `dropdown_button2`, `aligned_tooltip`
-- [ ] Replace `webviewx_plus` usages with `webview_flutter` in programme viewer
-- [ ] Run `dart pub deps` — verify no transitive `provider` package remains
+- [x] Delete `lib/flutter_flow/` directory entirely
+- [x] Delete `lib/app_state.dart`
+- [x] Delete `lib/library_values.dart`
+- [x] Delete `lib/backend/` (now in `api_client` package)
+- [x] Delete `lib/actions/actions.dart` (now in `feature_auth`)
+- [x] Delete `lib/custom_code/` (now distributed across packages)
+- [x] Delete `lib/index.dart` (FF-generated barrel export)
+- [x] Delete all remaining root `lib/` page/widget directories (all migrated to packages)
+- [x] Update root `pubspec.yaml` — replaced with minimal monorepo-root pubspec (no Flutter app deps)
+- [x] `webviewx_plus` — not used in any package (already removed during package migrations)
+- [ ] Run `dart pub deps` in `apps/harriers/` — verify no transitive `provider` package remains
 - [ ] Run `flutter analyze` across workspace — zero errors, zero warnings
 - [ ] Run full smoke test suite
-- [ ] Archive or delete `example_apps/harriers/` — superseded by `apps/harriers/`
+- [x] Archive or delete `example_apps/harriers/` — superseded by `apps/harriers/`
 - [ ] Commit: "chore: remove all FlutterFlow dependencies and legacy code"
 
 ---
