@@ -125,3 +125,18 @@ final commercialEventsProvider = FutureProvider.autoDispose
       .withoutNulls
       .toList();
 });
+
+/// Single fixture detail, keyed by matchObjectId.
+///
+/// Used by [FixtureDetailScreen] to load the fixture before composing
+/// stats, lineups, live text, and league table sections.
+final fixtureDetailProvider = FutureProvider.autoDispose
+    .family<BLESSfixtureStruct?, _MatchArgs>((ref, args) async {
+  final response =
+      await BackendlessDatabaseGroup.getSpecificFixtureCall.call(
+    objectId: args.matchObjectId,
+    bLProjectId: args.projectId,
+    bLRestAPIKey: args.restApiKey,
+  );
+  return BLESSfixtureStruct.maybeFromMap(response.jsonBody);
+});

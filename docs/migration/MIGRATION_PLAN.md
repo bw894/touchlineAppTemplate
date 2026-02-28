@@ -884,13 +884,14 @@ Auth flow:
 
 The Harriers `LGCFixture`, `LGCLive`, and `LGCResult` screens are the same composited screen — a single fixture shown with sections that appear/hide based on match state (`isLive`, `hasResult`).
 
-- [ ] Create `packages/feature_match_centre/lib/src/screens/fixture_detail_screen.dart`
+- [x] Create `packages/feature_match_centre/lib/src/screens/fixture_detail_screen.dart`
   - Accepts `matchObjectId: String` route parameter
-  - `ConsumerStatefulWidget`
-  - Fetches fixture via `getSpecificFixtureCall` (already in `api_client`)
-  - Sections rendered top-to-bottom: `TopBitWidget(variant: specific)` → `StatsWidget` → `LiveTextWidget` → `LineupsWidget` → `LeagueTableWidget(variant: mini)` → `PollsVotingWidget`
-  - Sections shown/hidden based on match state
-- [ ] Export from `packages/feature_match_centre/lib/feature_match_centre.dart`
+  - `ConsumerWidget` (body separated into `_FixtureDetailBody StatelessWidget`)
+  - Fetches fixture via `fixtureDetailProvider` → `getSpecificFixtureCall`
+  - Sections: `TopBitWidget(specific)` always → `StatsWidget` + `LiveTextWidget` if `hasScore` → `LineupsWidget` if `lineupsOnOff` → `LeagueTableWidget(mini)` always → `MatchSponsorsWidget`
+  - `PollsVotingWidget` shown via dialog from `TopBitWidget.onPoll` callback
+  - Cross-feature deps added to `pubspec.yaml`: `feature_auth`, `feature_league`, `feature_player`, `feature_predictor`, `go_router`
+- [x] Export from `packages/feature_match_centre/lib/feature_match_centre.dart`
 - [ ] `flutter analyze` in `packages/feature_match_centre` — zero errors
 
 ### 6.5 — Port HomeScreen

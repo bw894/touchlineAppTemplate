@@ -7,6 +7,7 @@
 library feature_match_centre;
 
 export 'src/providers.dart';
+export 'src/screens/fixture_detail_screen.dart';
 export 'src/widgets/games_page_widget.dart';
 export 'src/widgets/next_fixture_slider.dart';
 export 'src/widgets/todays_games_widget.dart';
